@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <title>Controle de Estoque</title>
+</head>
+<body>
+    <h1>Controle de Estoque</h1>
+
+    <h2>Adicionar Produto</h2>
+    <form action="{{ url_for('add') }}" method="POST">
+        <input type="text" name="nome" placeholder="Nome do produto" required />
+        <input type="number" name="quantidade" placeholder="Quantidade" min="0" required />
+        <input type="number" step="0.01" name="preco" placeholder="Preço" min="0" required />
+        <button type="submit">Adicionar</button>
+    </form>
+
+    <h2>Produtos Cadastrados</h2>
+    <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Quantidade</th>
+                <th>Preço</th>
+                <th>Atualizar Quantidade</th>
+                <th>Excluir</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for produto in produtos %}
+            <tr>
+                <td>{{ produto.nome }}</td>
+                <td>{{ produto.quantidade }}</td>
+                <td>R$ {{ '%.2f'|format(produto.preco) }}</td>
+                <td>
+                    <form action="{{ url_for('update', id=produto.id) }}" method="POST" style="display:inline;">
+                        <input type="number" name="quantidade" min="0" value="{{ produto.quantidade }}" required />
+                        <button type="submit">Atualizar</button>
+                    </form>
+                </td>
+                <td>
+                    <a href="{{ url_for('delete', id=produto.id) }}" onclick="return confirm('Excluir este produto?');">Excluir</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">Nenhum produto cadastrado.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
