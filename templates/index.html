@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <title>Controle de Estoque</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
 <body>
     <h1>Controle de Estoque</h1>
@@ -50,4 +51,13 @@
         </tbody>
     </table>
 </body>
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul style="background-color: #e7f3fe; border-left: 6px solid #2196F3; padding: 10px; list-style: none;"
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
 </html>

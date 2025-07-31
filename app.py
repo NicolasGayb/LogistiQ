@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+app.secret_key = 's3cr3t_k3y'  # Chave secreta para sessões
 
 # Configura o banco de dados SQLite
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///estoque.db'
@@ -30,6 +31,7 @@ def add():
     db.session.add(novo_produto)
     db.session.commit()
 
+    flash(f'Produto "{nome}" adicionado com sucesso!')
     return redirect(url_for('index'))
 
 @app.route('/update/<int:id>', methods=['POST'])
@@ -37,6 +39,8 @@ def update(id):
     produto = Produto.query.get_or_404(id)
     produto.quantidade = int(request.form['quantidade'])
     db.session.commit()
+
+    flash(f'Quantidade do produto "{produto.nome}" atualizada para {produto.quantidade}.')
     return redirect(url_for('index'))
 
 @app.route('/delete/<int:id>')
@@ -44,6 +48,8 @@ def delete(id):
     produto = Produto.query.get_or_404(id)
     db.session.delete(produto)
     db.session.commit()
+
+    flash(f'Produto "{produto.nome}" removido com sucesso!')
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
