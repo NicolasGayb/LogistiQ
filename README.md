@@ -1,18 +1,27 @@
 
-# ControleEstoqueV2
+# 🧮 ControleEstoqueV2 · ![Python](https://img.shields.io/badge/Python-3.10-blue) ![Flask](https://img.shields.io/badge/Flask-2.3-lightgrey)
 
-Sistema web para controle de estoque, desenvolvido em Python com Flask. Permite cadastro, autenticação de usuários e gerenciamento de produtos.
+Sistema web simples para controle de estoque, desenvolvido com Python e Flask. Ideal para pequenos negócios ou como projeto de aprendizado. Permite cadastrar usuários, gerenciar produtos e acompanhar movimentações de estoque.
 
-## Funcionalidades
-- Cadastro e login de usuários
-- Registro, edição e exclusão de produtos
-- Visualização do estoque
-- Controle de movimentações
+## 📑 Tabela de Conteúdo
+- [Funcionalidades](#funcionalidades)
+- [Tecnologias Utilizadas](#tecnologias-utilizadas)
+- [Estrutura do Projeto](#estrutura-do-projeto)
+- [Instalação](#instalação)
+- [Uso](#uso)
+- [Dependências](#dependências)
+- [Autor](#autor)
 
-## Tecnologias Utilizadas
-- Python 3
-- Flask
-- SQLite
+## ✅ Funcionalidades
+- 👤 Cadastro e login de usuários
+- 📦 Registro, edição e exclusão de produtos
+- 📊 Visualização de estoque em tempo real
+- 🔄 Controle de movimentações (entradas/saídas)
+
+## 🛠 Tecnologias Utilizadas
+- [Python 3](https://www.python.org/)
+- [Flask](https://flask.palletsprojects.com/)
+- [SQLite](https://www.sqlite.org/index.html)
 
 ## Estrutura do Projeto
 ```
@@ -22,14 +31,14 @@ ControleEstoqueV2/
 │   ├── auth.py
 │   ├── models.py
 │   └── routes.py
+│   └── static/
+│       └── style.css
 │   └── templates/
 │       ├── index.html
 │       ├── login.html
 │       └── registro.html
 ├── instance/
-│   └── estoque.db
-│   └── static/
-│       └── style.css
+│   └── estoque.dbas
 ├── requirements.txt
 ├── run.py
 ├── README.md
@@ -58,9 +67,15 @@ ControleEstoqueV2/
    ```
 2. Acesse no navegador: `http://localhost:5000`
 
+## 🖥 Demonstração
+
+![Tela inicial](app/static/demo.png)
+
 ## Dependências
 Veja o arquivo `requirements.txt` para as bibliotecas necessárias.
 
-## Contato
-Autor: Nicolas Gabriel Rodrigues Leal
-Email: nicolasgbleal@gmail.com
+## 👨‍💻 Autor
+
+- **Nicolas Gabriel Rodrigues Leal**
+- Email: [nicolasgbleal@gmail.com](mailto:nicolasgbleal@gmail.com)
+- GitHub: [@NicolasGayb](https://github.com/NicolasGayb)
