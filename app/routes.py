@@ -13,7 +13,8 @@ routes = Blueprint('routes', __name__)
 @login_required  # Requer login
 def index():
     produtos = Produto.query.all()
-    return render_template('index.html', produtos=produtos)
+    valor_total_estoque = sum(p.quantidade * p.preco for p in produtos)
+    return render_template('index.html', produtos=produtos, valor_total_estoque=valor_total_estoque)
 
 # Rota para adicionar um novo produto
 @routes.route('/add', methods=['POST'])
