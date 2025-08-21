@@ -1,8 +1,10 @@
-from app import create_app
+from app import create_app, db
 
-# Cria a aplicação Flask com base na função de fábrica em __init__.py
 app = create_app()
 
-# Executa a aplicação no modo de desenvolvimento
-if __name__ == '__main__':
-    app.run(debug=True)
+# Cria o banco se não existir (SQLite local)
+with app.app_context():
+    db.create_all()
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)
