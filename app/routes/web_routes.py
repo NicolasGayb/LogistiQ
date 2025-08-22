@@ -145,3 +145,26 @@ def historico():
     agora = datetime.now(utc).astimezone(brt)
     return render_template('historico.html', historico=historico, agora=agora,
                            ordenar_por=ordenar_por, ordem=ordem)
+
+# ------------------------
+# PERFIL DO USUÁRIO
+# ------------------------
+@routes.route('/perfil', methods=['GET', 'POST'])
+@login_required
+def perfil():
+    if request.method == 'POST':
+        nome = request.form.get('nome')
+        email = request.form.get('email')
+        senha = request.form.get('senha')  # opcional, se quiser mudar a senha
+
+        # Atualizar informações do usuário
+        current_user.nome = nome
+        current_user.email = email
+        if senha:
+            current_user.set_password(senha)  # supondo que você tenha um método para hash de senha
+        db.session.commit()
+
+        flash('Informações do perfil atualizadas com sucesso!', 'success')
+        return redirect(url_for('routes.perfil'))
+
+    return render_template('perfil.html', usuario=current_user)
