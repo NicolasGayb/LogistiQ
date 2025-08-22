@@ -3,21 +3,24 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_migrate import Migrate  # <-- Importa Flask-Migrate
 
 # Instancia as extensões
 db = SQLAlchemy()
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'  # Define a rota padrão para login
+migrate = Migrate()  # <-- Instancia o Migrate
 
 def create_app():
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'sua_chave_secreta_segura'  # Protege sessões
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:LkUWNCvpNYKUiMGgzFUiMtCBxiuSBSYI@hopper.proxy.rlwy.net:46545/railway'  # Conexão com PostgreSQL
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # Desativa notificações desnecessárias
+    app.config['SECRET_KEY'] = 'sua_chave_secreta_segura'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:LkUWNCvpNYKUiMGgzFUiMtCBxiuSBSYI@hopper.proxy.rlwy.net:46545/railway'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     # Inicializa as extensões com a aplicação
     db.init_app(app)
     login_manager.init_app(app)
+    migrate.init_app(app, db)  # <-- Inicializa o Migrate
 
     # Importa modelo de usuário para o carregamento de sessões
     from app.models import Usuario

@@ -3,34 +3,153 @@
 {% block title %}Perfil do Usuário{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-lg-6">
-        <div class="card shadow-lg border-0 rounded-3">
-            <div class="card-header bg-dark text-white">
-                <h5 class="mb-0"><i class="bi bi-person-circle"></i> Meu Perfil</h5>
-            </div>
-            <div class="card-body">
-                <form method="POST" action="{{ url_for('routes.perfil') }}">
-                    <div class="mb-3">
-                        <label for="nome" class="form-label">Nome</label>
-                        <input type="text" class="form-control" id="nome" name="nome" value="{{ current_user.nome }}" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label">E-mail</label>
-                        <input type="email" class="form-control" id="email" name="email" value="{{ current_user.email }}" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="senha" class="form-label">Nova Senha</label>
-                        <input type="password" class="form-control" id="senha" name="senha" placeholder="Deixe em branco para manter a senha atual">
-                    </div>
-                    <div class="mb-3">
-                        <label for="confirmar_senha" class="form-label">Confirmar Senha</label>
-                        <input type="password" class="form-control" id="confirmar_senha" name="confirmar_senha" placeholder="Deixe em branco para manter a senha atual">
-                    </div>
-                    <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Salvar Alterações</button>
-                </form>
+<div class="container py-5">
+
+    <!-- Header do Perfil -->
+    <div class="text-center mb-5">
+        <div class="avatar rounded-circle mx-auto mb-3"></div>
+        <h2 class="fw-bold text-dark">{{ current_user.nome }}</h2>
+        <p class="text-muted">{{ current_user.username }}</p>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- Card: Formulário de Edição -->
+        <div class="col-lg-6">
+            <div class="card border-0 rounded-4 shadow-sm hover-card">
+                <div class="card-header bg-dark text-white rounded-top-4">
+                    <h5 class="mb-0"><i class="bi bi-person-circle me-2"></i>Editar Perfil</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('routes.perfil') }}">
+                        <div class="mb-3">
+                            <label for="nome" class="form-label">Nome</label>
+                            <input type="text" class="form-control" id="nome" name="nome" value="{{ current_user.nome }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" value="{{ current_user.username }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">E-mail</label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ current_user.email }}" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label for="senha" class="form-label">Nova Senha</label>
+                            <input type="password" class="form-control" id="senha" name="senha" placeholder="Deixe em branco para manter a senha atual">
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmar_senha" class="form-label">Confirmar Senha</label>
+                            <input type="password" class="form-control" id="confirmar_senha" name="confirmar_senha" placeholder="Deixe em branco para manter a senha atual">
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 fw-bold"><i class="bi bi-save me-1"></i> Salvar Alterações</button>
+                    </form>
+                </div>
             </div>
         </div>
+
+
+        <!-- Card: Histórico de Atividades -->
+        <div class="col-lg-6">
+            <div class="card border-0 rounded-4 shadow-sm hover-card">
+                <div class="card-header bg-dark text-white rounded-top-4">
+                    <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Histórico de Atividades</h5>
+                </div>
+                <div class="card-body p-4">
+                    {% if atividades %}
+                        <ul class="list-group list-group-flush">
+                            {% for atividade in atividades %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center border-0 mb-2 rounded-3 bg-white shadow-sm">
+                                    {{ atividade.descricao }}
+                                    <span class="badge bg-success rounded-pill">
+                                        {{ atividade.data.strftime('%d/%m/%Y %H:%M') }}
+                                    </span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted mb-0">Nenhuma atividade registrada ainda.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Card: Configurações & Informações -->
+        <div class="col-lg-6">
+            <div class="card border-0 rounded-4 shadow-sm hover-card">
+                <div class="card-header bg-dark text-white rounded-top-4">
+                    <h5 class="mb-0"><i class="bi bi-gear-fill me-2"></i>Configurações & Info</h5>
+                </div>
+                <div class="card-body p-4">
+                    <p><strong>Data de cadastro:</strong> {{ current_user.data_cadastro.strftime('%d/%m/%Y') if current_user.data_cadastro else 'Não disponível' }}</p>
+                    <p><strong>Tipo de usuário:</strong> {{ current_user.tipo_usuario or 'Não definido' }}</p>
+                    <hr>
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="notificacoes" {% if current_user.notificacoes %}checked{% endif %}>
+                        <label class="form-check-label" for="notificacoes">Receber notificações por e-mail</label>
+                    </div>
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="temaEscuro" {% if current_user.tema_escuro %}checked{% endif %}>
+                        <label class="form-check-label" for="temaEscuro">Ativar tema escuro</label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="resumoSemanal" {% if current_user.resumo_semanal %}checked{% endif %}>
+                        <label class="form-check-label" for="resumoSemanal">Receber resumo semanal</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
+
+<style>
+    body {
+        background-color: #f5f5f5;
+        color: #495057;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .avatar {
+        width: 120px;
+        height: 120px;
+        background-image: url('https://via.placeholder.com/120');
+        background-size: cover;
+        background-position: center;
+        margin-bottom: 15px;
+        border: 3px solid #28a745;
+    }
+
+    .card-header {
+        font-weight: 600;
+    }
+
+    .shadow-sm {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .hover-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .list-group-item.bg-white {
+        background-color: #fff !important;
+    }
+
+    .text-muted {
+        color: #6c757d !important;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+</style>
 {% endblock %}

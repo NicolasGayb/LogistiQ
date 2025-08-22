@@ -1,7 +1,9 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from app import db
-from app.models import Produto, HistoricoMovimentacao
+from app.models import Produto, HistoricoMovimentacao, Atividade, Usuario
+from app.utils import registrar_atividade, listar_atividades
+from flask_login import current_user
 from datetime import datetime
 import pytz
 
@@ -46,9 +48,8 @@ def adicionar_produto():
     db.session.add(novo_produto)
     db.session.commit()  # gera ID
 
-    # Salva em UTC
+    # Histórico de movimentação
     agora_utc = datetime.now(utc)
-
     novo_historico = HistoricoMovimentacao(
         produto_id=novo_produto.id,
         produto_nome=novo_produto.nome,
@@ -61,6 +62,9 @@ def adicionar_produto():
     )
     db.session.add(novo_historico)
     db.session.commit()
+
+    # **Registrar atividade do usuário**
+    registrar_atividade(current_user, f"Adicionou o produto '{novo_produto.nome}' ao estoque")
 
     flash(f'Produto "{nome}" adicionado com sucesso!', 'success')
     return redirect(url_for('routes.index'))
@@ -80,7 +84,6 @@ def atualizar_produto(id):
     db.session.commit()
 
     agora_utc = datetime.now(utc)
-
     historico = HistoricoMovimentacao(
         produto_id=produto.id,
         produto_nome=produto.nome,
@@ -94,6 +97,9 @@ def atualizar_produto(id):
     db.session.add(historico)
     db.session.commit()
 
+    # **Registrar atividade do usuário**
+    registrar_atividade(current_user, f"Atualizou o produto '{produto.nome}'")
+
     flash(f'Produto "{produto.nome}" atualizado com sucesso!', 'success')
     return redirect(url_for('routes.index'))
 
@@ -106,7 +112,6 @@ def remover_produto(id):
     produto = Produto.query.get_or_404(id)
 
     agora_utc = datetime.now(utc)
-
     historico = HistoricoMovimentacao(
         produto_id=produto.id,
         produto_nome=produto.nome,
@@ -122,6 +127,9 @@ def remover_produto(id):
     db.session.commit()
     db.session.delete(produto)
     db.session.commit()
+
+    # **Registrar atividade do usuário**
+    registrar_atividade(current_user, f"Removeu o produto '{produto.nome}' do estoque")
 
     flash(f'Produto "{produto.nome}" removido com sucesso!', 'success')
     return redirect(url_for('routes.index'))
@@ -155,16 +163,19 @@ def perfil():
     if request.method == 'POST':
         nome = request.form.get('nome')
         email = request.form.get('email')
-        senha = request.form.get('senha')  # opcional, se quiser mudar a senha
+        senha = request.form.get('senha')  # opcional
 
         # Atualizar informações do usuário
         current_user.nome = nome
         current_user.email = email
         if senha:
-            current_user.set_password(senha)  # supondo que você tenha um método para hash de senha
+            current_user.set_password(senha)
         db.session.commit()
 
         flash('Informações do perfil atualizadas com sucesso!', 'success')
         return redirect(url_for('routes.perfil'))
 
-    return render_template('perfil.html', usuario=current_user)
+    # Buscar atividades do usuário logado, mais recentes primeiro
+    atividades = Atividade.query.filter_by(usuario_id=current_user.id).order_by(Atividade.data.desc()).all()
+
+    return render_template('perfil.html', usuario=current_user, atividades=atividades)
