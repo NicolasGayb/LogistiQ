@@ -103,11 +103,11 @@ def remover_produto(id):
         usuario=current_user.username,
         acao='Remover',
         quantidade_anterior=produto.quantidade,
-        quantidade_nova=None,
+        quantidade_nova=0,
         motivo='Produto removido do estoque'
     )
     db.session.add(historico)
-    db.session.flush()  # Garante que o histórico esteja registrado na session antes de deletar
+    db.session.commit()  # Garante que o histórico esteja registrado na session antes de deletar
 
     db.session.delete(produto)
     db.session.commit()
@@ -122,9 +122,18 @@ def remover_produto(id):
 @login_required
 def historico():
     # Ordena por data/hora decrescente
-    movimentacoes = HistoricoMovimentacao.query.order_by(HistoricoMovimentacao.data_hora.desc()).all()
+    historico = HistoricoMovimentacao.query.order_by(HistoricoMovimentacao.data_hora.desc()).all()
+
+    # Ajusta para casos em que o produto foi deletado
+    for h in historico:
+        if h.produto is None:
+            h.produto_nome = 'Produto removido'
+        else:
+            h.produto_nome = h.produto.nome
+
     return render_template(
         'historico.html',
-        movimentacoes=movimentacoes,
+        historico=historico,
         agora=datetime.now()
     )
+
