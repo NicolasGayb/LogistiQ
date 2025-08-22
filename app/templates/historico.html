@@ -29,6 +29,30 @@
                         <h5 class="mb-0"><i class="bi bi-clock-history"></i> Histórico de Movimentações</h5>
                         <span class="badge bg-secondary">{{ historico|length }} registros</span>
                     </div>
+
+                    <!-- Opções de ordenação -->
+                    <div class="card-body">
+                        <div class="d-flex justify-content-start mb-3 flex-wrap gap-2">
+                            <span class="me-2">Ordenar por:</span>
+                            <a href="{{ url_for('routes.historico', ordenar='data', ordem='desc') }}" 
+                               class="btn btn-sm btn-outline-primary {% if ordenar_por=='data' and ordem=='desc' %}active{% endif %}">
+                               Data ↓
+                            </a>
+                            <a href="{{ url_for('routes.historico', ordenar='data', ordem='asc') }}" 
+                               class="btn btn-sm btn-outline-primary {% if ordenar_por=='data' and ordem=='asc' %}active{% endif %}">
+                               Data ↑
+                            </a>
+                            <a href="{{ url_for('routes.historico', ordenar='acao', ordem='asc') }}" 
+                               class="btn btn-sm btn-outline-primary {% if ordenar_por=='acao' and ordem=='asc' %}active{% endif %}">
+                               Ação ↑
+                            </a>
+                            <a href="{{ url_for('routes.historico', ordenar='acao', ordem='desc') }}" 
+                               class="btn btn-sm btn-outline-primary {% if ordenar_por=='acao' and ordem=='desc' %}active{% endif %}">
+                               Ação ↓
+                            </a>
+                        </div>
+                    </div>
+
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <table class="table table-hover table-striped mb-0 align-middle">
@@ -73,6 +97,7 @@
                             </table>
                         </div>
                     </div>
+
                     <div class="card-footer text-end small text-muted">
                         Atualizado em {{ agora.strftime('%d/%m/%Y %H:%M:%S') }}
                     </div>

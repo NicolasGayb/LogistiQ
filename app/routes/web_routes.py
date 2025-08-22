@@ -3,8 +3,11 @@ from flask_login import login_required, current_user
 from app import db
 from app.models import Produto, HistoricoMovimentacao
 from datetime import datetime
+import pytz
 
 routes = Blueprint('routes', __name__)
+utc = pytz.utc
+brt = pytz.timezone('America/Sao_Paulo')
 
 # ------------------------
 # ROTA PRINCIPAL - ESTOQUE
@@ -15,7 +18,6 @@ def index():
     produtos = Produto.query.all()
     valor_total_estoque = sum(p.quantidade * p.preco for p in produtos)
 
-    # Preparar dados para gráficos ou JS
     estoque_labels = [p.nome for p in produtos]
     estoque_quantidades = [p.quantidade for p in produtos]
     estoque_valores = [p.quantidade * p.preco for p in produtos]
@@ -42,18 +44,22 @@ def adicionar_produto():
 
     novo_produto = Produto(nome=nome, quantidade=quantidade, preco=preco)
     db.session.add(novo_produto)
-    db.session.commit()  # Commit para gerar o ID do produto
+    db.session.commit()  # gera ID
 
-    # Registrar no histórico
-    historico = HistoricoMovimentacao(
+    # Salva em UTC
+    agora_utc = datetime.now(utc)
+
+    novo_historico = HistoricoMovimentacao(
         produto_id=novo_produto.id,
-        usuario=current_user.username,
-        acao='Adicionar',
+        produto_nome=novo_produto.nome,
+        usuario=current_user.nome,
+        acao="Adicionar",
         quantidade_anterior=None,
-        quantidade_nova=quantidade,
-        motivo='Novo produto adicionado'
+        quantidade_nova=novo_produto.quantidade,
+        motivo="Novo produto adicionado",
+        data_hora=agora_utc
     )
-    db.session.add(historico)
+    db.session.add(novo_historico)
     db.session.commit()
 
     flash(f'Produto "{nome}" adicionado com sucesso!', 'success')
@@ -66,7 +72,6 @@ def adicionar_produto():
 @login_required
 def atualizar_produto(id):
     produto = Produto.query.get_or_404(id)
-
     quantidade_anterior = produto.quantidade
     quantidade_nova = int(request.form.get('quantidade'))
     motivo = request.form.get('motivo')
@@ -74,14 +79,17 @@ def atualizar_produto(id):
     produto.quantidade = quantidade_nova
     db.session.commit()
 
-    # Registrar no histórico
+    agora_utc = datetime.now(utc)
+
     historico = HistoricoMovimentacao(
         produto_id=produto.id,
+        produto_nome=produto.nome,
         usuario=current_user.username,
         acao='Atualizar',
         quantidade_anterior=quantidade_anterior,
         quantidade_nova=quantidade_nova,
-        motivo=motivo
+        motivo=motivo,
+        data_hora=agora_utc
     )
     db.session.add(historico)
     db.session.commit()
@@ -97,18 +105,21 @@ def atualizar_produto(id):
 def remover_produto(id):
     produto = Produto.query.get_or_404(id)
 
-    # Registrar no histórico ANTES de deletar
+    agora_utc = datetime.now(utc)
+
     historico = HistoricoMovimentacao(
         produto_id=produto.id,
+        produto_nome=produto.nome,
         usuario=current_user.username,
         acao='Remover',
         quantidade_anterior=produto.quantidade,
         quantidade_nova=0,
-        motivo='Produto removido do estoque'
+        motivo='Produto removido do estoque',
+        data_hora=agora_utc
     )
-    db.session.add(historico)
-    db.session.commit()  # Garante que o histórico esteja registrado na session antes de deletar
 
+    db.session.add(historico)
+    db.session.commit()
     db.session.delete(produto)
     db.session.commit()
 
@@ -121,19 +132,16 @@ def remover_produto(id):
 @routes.route('/historico')
 @login_required
 def historico():
-    # Ordena por data/hora decrescente
-    historico = HistoricoMovimentacao.query.order_by(HistoricoMovimentacao.data_hora.desc()).all()
+    ordenar_por = request.args.get('ordenar', 'data')
+    ordem = request.args.get('ordem', 'desc')
 
-    # Ajusta para casos em que o produto foi deletado
+    campo = HistoricoMovimentacao.acao if ordenar_por == 'acao' else HistoricoMovimentacao.data_hora
+    historico = (HistoricoMovimentacao.query.order_by(campo.asc() if ordem=='asc' else campo.desc()).all())
+
+    # Converte UTC -> BRT apenas para exibição
     for h in historico:
-        if h.produto is None:
-            h.produto_nome = 'Produto removido'
-        else:
-            h.produto_nome = h.produto.nome
+        h.data_hora = h.data_hora.replace(tzinfo=utc).astimezone(brt)
 
-    return render_template(
-        'historico.html',
-        historico=historico,
-        agora=datetime.now()
-    )
-
+    agora = datetime.now(utc).astimezone(brt)
+    return render_template('historico.html', historico=historico, agora=agora,
+                           ordenar_por=ordenar_por, ordem=ordem)
