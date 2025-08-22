@@ -3,8 +3,8 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
-from . import db
-from .models import Usuario
+from app import db
+from app.models import Usuario
 import re
 
 # Cria um blueprint para as rotas de autenticação
@@ -51,6 +51,7 @@ def registro():
     if request.method == 'POST':
         nome = request.form['nome']
         email = request.form['email']
+        username = request.form['username']
         senha = request.form['senha']
 
         # Valida a senha antes de cadastrar
@@ -63,17 +64,23 @@ def registro():
         if Usuario.query.filter_by(email=email).first():
             flash('E-mail já cadastrado.')
             return redirect(url_for('auth.registro'))
+        
+        # Verifica se o usuário já existe
+        if Usuario.query.filter_by(username=username).first():
+            flash('Usuário já existente.')
+            return redirect(url_for('auth.registro'))
 
         # Cria e salva o novo usuário com senha criptografada
         novo_usuario = Usuario(
             nome=nome,
             email=email,
+            username=username,
             senha=generate_password_hash(senha)
         )
         db.session.add(novo_usuario)
         db.session.commit()
 
-        flash('Cadastro realizado com sucesso! Faça o login.')
+        flash('Cadastro realizado com sucesso! Faça o login para acessar o sistema.')
         return redirect(url_for('auth.login'))
 
     return render_template('registro.html')
