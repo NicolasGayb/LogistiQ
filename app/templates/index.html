@@ -24,22 +24,11 @@
 </head>
 <body class="bg-light">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
-        <a class="navbar-brand fw-bold" href="{{ url_for('routes.index') }}">
-            <i class="bi bi-box-seam"></i> Controle de Estoque
-        </a>
-        <div class="ms-auto d-flex gap-2">
-            <a href="{{ url_for('routes.historico') }}" class="btn btn-outline-info" data-bs-toggle="tooltip" title="Histórico de Movimentações">
-                <i class="bi bi-clock-history"></i> Histórico
-            </a>
-            <a href="{{ url_for('routes.perfil') }}" class="btn btn-outline-warning" data-bs-toggle="tooltip" title="Meu Perfil">
-                <i class="bi bi-person-circle"></i> Perfil
-            </a>
-            <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-light" data-bs-toggle="tooltip" title="Sair">
-                <i class="bi bi-box-arrow-right"></i> Sair
-            </a>
-        </div>
-    </nav>
+    {% extends "navbar.html" %}
+
+        {% block title %}Início{% endblock %}
+
+    {% block content %}
 
     <div class="container mt-5">
 
@@ -224,4 +213,5 @@
         });
     }
 </script>
+{% endblock %}
 </html>

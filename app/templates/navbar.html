@@ -10,7 +10,8 @@
 <body class="bg-light">
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 shadow-sm">
         <a class="navbar-brand fw-bold" href="{{ url_for('routes.index') }}">
             <i class="bi bi-box-seam"></i> Controle de Estoque
         </a>
@@ -20,20 +21,39 @@
         </button>
 
         <div class="collapse navbar-collapse" id="navbarContent">
-            <ul class="navbar-nav ms-auto align-items-center">
+            <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link d-flex align-items-center" href="{{ url_for('routes.perfil') }}">
-                        <i class="bi bi-person-circle me-1"></i> {{ current_user.nome }}
+                    <a class="nav-link {% if request.endpoint == 'routes.index' %}active{% endif %}" href="{{ url_for('routes.index') }}">
+                        <i class="bi bi-house-door me-1"></i> Início
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link d-flex align-items-center" href="{{ url_for('auth.logout') }}">
+                    <a class="nav-link {% if request.endpoint == 'routes.historico' %}active{% endif %}" href="{{ url_for('routes.historico') }}">
+                        <i class="bi bi-clock-history me-1"></i> Histórico
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint == 'routes.perfil' %}active{% endif %}" href="{{ url_for('routes.perfil') }}">
+                        <i class="bi bi-person-circle me-1"></i> Perfil
+                    </a>
+                </li>
+            </ul>
+
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <span class="navbar-text text-white me-3">
+                        Olá, <strong>{{ current_user.nome }}</strong>
+                    </span>
+                </li>
+                <li class="nav-item">
+                    <a class="btn btn-outline-light d-flex align-items-center" href="{{ url_for('auth.logout') }}">
                         <i class="bi bi-box-arrow-right me-1"></i> Sair
                     </a>
                 </li>
             </ul>
         </div>
     </nav>
+
 
     <!-- Conteúdo principal -->
     <div class="container py-5">
