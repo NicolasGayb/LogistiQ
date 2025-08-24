@@ -88,14 +88,15 @@
         <!-- Relatórios: apenas administrador e supervisor -->
         {% if current_user.role in ['administrador', 'supervisor'] %}
         <li class="nav-item">
-          <a class="nav-link {% if request.endpoint == 'routes.relatorios' %}active{% endif %}"
-             href="{{ url_for('routes.relatorios') }}">
+          <a class="nav-link {% if request.endpoint == 'routes.relatorio' %}active{% endif %}"
+             href="{{ url_for('routes.relatorio') }}">
             <i class="bi bi-graph-up me-1"></i> Relatórios
           </a>
         </li>
         {% endif %}
 
         <!-- Gerenciamento de usuários: apenas administrador -->
+        {# Comentado temporariamente porque o endpoint 'usuarios' não existe ainda
         {% if current_user.role == 'administrador' %}
         <li class="nav-item">
           <a class="nav-link {% if request.endpoint == 'routes.usuarios' %}active{% endif %}"
@@ -104,6 +105,7 @@
           </a>
         </li>
         {% endif %}
+        #}
       </ul>
 
       <!-- Direita -->
