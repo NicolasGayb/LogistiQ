@@ -5,7 +5,7 @@ from app.models import Produto, HistoricoMovimentacao, Atividade, Usuario
 from app.utils import registrar_atividade, listar_atividades
 from datetime import datetime
 import pytz
-from app.decorators import role_required  # <- Import do decorator de roles
+from app.decorators import role_required
 
 routes = Blueprint('routes', __name__)
 utc = pytz.utc
