@@ -67,49 +67,74 @@
     <div class="collapse navbar-collapse" id="navbarContent">
       <!-- Esquerda -->
       <ul class="navbar-nav me-auto gap-1">
+        <!-- Início sempre visível -->
         <li class="nav-item">
           <a class="nav-link {% if request.endpoint == 'routes.index' %}active{% endif %}"
              href="{{ url_for('routes.index') }}">
             <i class="bi bi-house-door me-1"></i> Início
           </a>
         </li>
+
+        <!-- Histórico: apenas administrador e supervisor -->
+        {% if current_user.role in ['administrador', 'supervisor'] %}
         <li class="nav-item">
           <a class="nav-link {% if request.endpoint == 'routes.historico' %}active{% endif %}"
              href="{{ url_for('routes.historico') }}">
             <i class="bi bi-clock-history me-1"></i> Histórico
           </a>
         </li>
+        {% endif %}
+
+        <!-- Relatórios: apenas administrador e supervisor -->
+        {% if current_user.role in ['administrador', 'supervisor'] %}
+        <li class="nav-item">
+          <a class="nav-link {% if request.endpoint == 'routes.relatorios' %}active{% endif %}"
+             href="{{ url_for('routes.relatorios') }}">
+            <i class="bi bi-graph-up me-1"></i> Relatórios
+          </a>
+        </li>
+        {% endif %}
+
+        <!-- Gerenciamento de usuários: apenas administrador -->
+        {% if current_user.role == 'administrador' %}
+        <li class="nav-item">
+          <a class="nav-link {% if request.endpoint == 'routes.usuarios' %}active{% endif %}"
+             href="{{ url_for('routes.usuarios') }}">
+            <i class="bi bi-people me-1"></i> Usuários
+          </a>
+        </li>
+        {% endif %}
       </ul>
 
       <!-- Direita -->
-<div class="d-flex align-items-center gap-3">
-  <a href="{{ url_for('routes.perfil') }}" class="user-pill">
-    <span class="user-avatar">{{ (current_user.nome[:1] if current_user and current_user.nome else 'U')|upper }}</span>
-    <span class="user-name">{{ current_user.nome }}</span>
-  </a>
-  <a class="btn btn-logout d-flex align-items-center gap-1" href="{{ url_for('auth.logout') }}">
-    <i class="bi bi-box-arrow-right"></i> Sair
-  </a>
-</div>
+      <div class="d-flex align-items-center gap-3">
+        <a href="{{ url_for('routes.perfil') }}" class="user-pill">
+          <span class="user-avatar">{{ (current_user.nome[:1] if current_user and current_user.nome else 'U')|upper }}</span>
+          <span class="user-name">{{ current_user.nome }}</span>
+        </a>
+        <a class="btn btn-logout d-flex align-items-center gap-1" href="{{ url_for('auth.logout') }}">
+          <i class="bi bi-box-arrow-right"></i> Sair
+        </a>
+      </div>
 
-    <style>
-    .btn-logout {
-        background: linear-gradient(135deg, #43a047, #2e7d32);
-        color: #fff;
-        border: none;
-        padding: 0.35rem 0.9rem;
-        border-radius: 999px;
-        font-weight: 500;
-        transition: all 0.2s ease-in-out;
-    }
-    .btn-logout:hover {
-        background: linear-gradient(135deg, #2e7d32, #43a047);
-        color: #fff;
-        transform: translateY(-1px);
-        box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.15);
-    }
-    </style>
-
+      <style>
+      .btn-logout {
+          background: linear-gradient(135deg, #43a047, #2e7d32);
+          color: #fff;
+          border: none;
+          padding: 0.35rem 0.9rem;
+          border-radius: 999px;
+          font-weight: 500;
+          transition: all 0.2s ease-in-out;
+      }
+      .btn-logout:hover {
+          background: linear-gradient(135deg, #2e7d32, #43a047);
+          color: #fff;
+          transform: translateY(-1px);
+          box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.15);
+      }
+      </style>
+    </div>
   </nav>
 
   <!-- Conteúdo -->
