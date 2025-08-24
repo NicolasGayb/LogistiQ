@@ -5,7 +5,7 @@ from app.models import Produto, HistoricoMovimentacao, Atividade, Usuario
 from app.utils import registrar_atividade, listar_atividades
 from datetime import datetime
 import pytz
-from app.decorators import role_required
+from app.decorators import role_required    
 
 routes = Blueprint('routes', __name__)
 utc = pytz.utc
@@ -174,3 +174,36 @@ def perfil():
 
     atividades = Atividade.query.filter_by(usuario_id=current_user.id).order_by(Atividade.data.desc()).all()
     return render_template('perfil.html', usuario=current_user, atividades=atividades)
+
+# ------------------------
+# Relatório
+# ------------------------
+@routes.route('/relatorio')
+@login_required
+@role_required('administrador', 'supervisor')  # Apenas Admin e Supervisor podem ver relatório
+def relatorio():
+    produtos = Produto.query.all()
+    valor_total_estoque = sum(p.quantidade * p.preco for p in produtos)
+
+    estoque_labels = [p.nome for p in produtos]
+    estoque_quantidades = [p.quantidade for p in produtos]
+    estoque_valores = [p.quantidade * p.preco for p in produtos]
+
+    return render_template(
+        'relatorio.html', 
+        produtos=produtos, 
+        usuario=current_user, 
+        valor_total_estoque=valor_total_estoque,
+        estoque_labels=estoque_labels,
+        estoque_quantidades=estoque_quantidades,
+        estoque_valores=estoque_valores
+    )
+
+# ------------------------
+
+# Página para acesso negado
+@routes.route('/acesso_negado')
+def acesso_negado():
+    return render_template('acesso_negado.html'), 403
+# ------------------------
+
