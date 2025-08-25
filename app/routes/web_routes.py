@@ -1,11 +1,11 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
 from flask_login import login_required, current_user
 from app import db
 from app.models import Produto, HistoricoMovimentacao, Atividade, Usuario
 from app.utils import registrar_atividade, listar_atividades
-from flask_login import current_user
 from datetime import datetime
 import pytz
+from app.decorators import role_required    
 
 routes = Blueprint('routes', __name__)
 utc = pytz.utc
@@ -39,6 +39,7 @@ def index():
 # ------------------------
 @routes.route('/adicionar', methods=['POST'])
 @login_required
+@role_required('administrador', 'usuario_padrao', 'supervisor') 
 def adicionar_produto():
     nome = request.form.get('nome')
     quantidade = int(request.form.get('quantidade'))
@@ -48,7 +49,6 @@ def adicionar_produto():
     db.session.add(novo_produto)
     db.session.commit()  # gera ID
 
-    # Histórico de movimentação
     agora_utc = datetime.now(utc)
     novo_historico = HistoricoMovimentacao(
         produto_id=novo_produto.id,
@@ -63,7 +63,6 @@ def adicionar_produto():
     db.session.add(novo_historico)
     db.session.commit()
 
-    # **Registrar atividade do usuário**
     registrar_atividade(current_user, f"Adicionou o produto '{novo_produto.nome}' ao estoque")
 
     flash(f'Produto "{nome}" adicionado com sucesso!', 'success')
@@ -74,6 +73,7 @@ def adicionar_produto():
 # ------------------------
 @routes.route('/atualizar/<int:id>', methods=['POST'])
 @login_required
+@role_required('administrador', 'usuario_padrao', 'supervisor')  # Admin, Usuário padrão e Supervisor
 def atualizar_produto(id):
     produto = Produto.query.get_or_404(id)
     quantidade_anterior = produto.quantidade
@@ -97,7 +97,6 @@ def atualizar_produto(id):
     db.session.add(historico)
     db.session.commit()
 
-    # **Registrar atividade do usuário**
     registrar_atividade(current_user, f"Atualizou o produto '{produto.nome}'")
 
     flash(f'Produto "{produto.nome}" atualizado com sucesso!', 'success')
@@ -108,6 +107,7 @@ def atualizar_produto(id):
 # ------------------------
 @routes.route('/remover/<int:id>')
 @login_required
+@role_required('administrador', 'supervisor')  # Apenas Admin e Supervisor podem remover
 def remover_produto(id):
     produto = Produto.query.get_or_404(id)
 
@@ -128,7 +128,6 @@ def remover_produto(id):
     db.session.delete(produto)
     db.session.commit()
 
-    # **Registrar atividade do usuário**
     registrar_atividade(current_user, f"Removeu o produto '{produto.nome}' do estoque")
 
     flash(f'Produto "{produto.nome}" removido com sucesso!', 'success')
@@ -139,20 +138,37 @@ def remover_produto(id):
 # ------------------------
 @routes.route('/historico')
 @login_required
+@role_required('administrador', 'supervisor')
 def historico():
+    per_page = 15
+    page = request.args.get('page', 1, type=int)
+
     ordenar_por = request.args.get('ordenar', 'data')
     ordem = request.args.get('ordem', 'desc')
 
-    campo = HistoricoMovimentacao.acao if ordenar_por == 'acao' else HistoricoMovimentacao.data_hora
-    historico = (HistoricoMovimentacao.query.order_by(campo.asc() if ordem=='asc' else campo.desc()).all())
+    query = HistoricoMovimentacao.query
 
-    # Converte UTC -> BRT apenas para exibição
+    # Ordenação
+    if ordenar_por == 'acao':
+        query = query.order_by(HistoricoMovimentacao.acao.asc() if ordem == 'asc' else HistoricoMovimentacao.acao.desc())
+    else:
+        query = query.order_by(HistoricoMovimentacao.data_hora.asc() if ordem == 'asc' else HistoricoMovimentacao.data_hora.desc())
+
+    # Paginação
+    pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+    historico = pagination.items
+
+    # Ajuste de fuso horário
     for h in historico:
         h.data_hora = h.data_hora.replace(tzinfo=utc).astimezone(brt)
 
     agora = datetime.now(utc).astimezone(brt)
-    return render_template('historico.html', historico=historico, agora=agora,
-                           ordenar_por=ordenar_por, ordem=ordem)
+    return render_template('historico.html',
+                           historico=historico,
+                           pagination=pagination,
+                           agora=agora,
+                           ordenar_por=ordenar_por,
+                           ordem=ordem)
 
 # ------------------------
 # PERFIL DO USUÁRIO
@@ -162,12 +178,10 @@ def historico():
 def perfil():
     if request.method == 'POST':
         nome = request.form.get('nome')
-        email = request.form.get('email')
+        # Email não pode ser alterado
         senha = request.form.get('senha')  # opcional
 
-        # Atualizar informações do usuário
         current_user.nome = nome
-        current_user.email = email
         if senha:
             current_user.set_password(senha)
         db.session.commit()
@@ -175,7 +189,49 @@ def perfil():
         flash('Informações do perfil atualizadas com sucesso!', 'success')
         return redirect(url_for('routes.perfil'))
 
-    # Buscar atividades do usuário logado, mais recentes primeiro
     atividades = Atividade.query.filter_by(usuario_id=current_user.id).order_by(Atividade.data.desc()).all()
-
     return render_template('perfil.html', usuario=current_user, atividades=atividades)
+
+# ------------------------
+# Relatório
+# ------------------------
+@routes.route('/relatorio')
+@login_required
+@role_required('administrador', 'supervisor')  # Apenas Admin e Supervisor podem ver relatório
+def relatorio():
+    produtos = Produto.query.all()
+    valor_total_estoque = sum(p.quantidade * p.preco for p in produtos)
+
+    estoque_labels = [p.nome for p in produtos]
+    estoque_quantidades = [p.quantidade for p in produtos]
+    estoque_valores = [p.quantidade * p.preco for p in produtos]
+
+    return render_template(
+        'relatorio.html', 
+        produtos=produtos, 
+        usuario=current_user, 
+        valor_total_estoque=valor_total_estoque,
+        estoque_labels=estoque_labels,
+        estoque_quantidades=estoque_quantidades,
+        estoque_valores=estoque_valores
+    )
+
+# ------------------------
+
+# Página para acesso negado
+@routes.route('/acesso_negado')
+def acesso_negado():
+    return render_template('acesso_negado.html'), 403
+# ------------------------
+
+# DARK MODE TOGGLE
+@routes.route('/toggle_theme', methods=['GET', 'POST'])
+@login_required
+def toggle_theme():
+    if request.method == 'POST':
+        current_user.tema_escuro = 'tema_escuro' in request.form
+        db.session.commit()
+        flash('Preferência de tema atualizada!', 'success')
+        return redirect(url_for('routes.perfil'))
+
+    return render_template('perfil.html', atividades=atividades, usuario=current_user)

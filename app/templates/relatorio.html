@@ -1,0 +1,95 @@
+{% extends "navbar.html" %}
+
+{% block title %}Relatórios de Estoque{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1 class="mb-4">Relatórios de Estoque</h1>
+  
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Valor Total do Estoque</h5>
+          <p class="card-text display-6">R$ {{ "{:,.2f}".format(valor_total_estoque) }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Número de Produtos</h5>
+          <p class="card-text display-6">{{ produtos|length }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Quantidade de Produtos</h5>
+      <canvas id="quantidadeChart"></canvas>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Valor do Estoque por Produto</h5>
+      <canvas id="valorChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Dados do estoque
+  const labels = {{ estoque_labels|tojson }};
+  const quantidades = {{ estoque_quantidades|tojson }};
+  const valores = {{ estoque_valores|tojson }};
+
+  // Gráfico de Quantidades
+  const ctxQtd = document.getElementById('quantidadeChart').getContext('2d');
+  new Chart(ctxQtd, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Quantidade',
+        data: quantidades,
+        backgroundColor: 'rgba(67, 160, 71, 0.6)',
+        borderColor: 'rgba(46, 125, 50, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+
+  // Gráfico de Valores
+  const ctxValor = document.getElementById('valorChart').getContext('2d');
+  new Chart(ctxValor, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Valor (R$)',
+        data: valores,
+        backgroundColor: 'rgba(33, 150, 243, 0.6)',
+        borderColor: 'rgba(25, 118, 210, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+</script>
+{% endblock %}

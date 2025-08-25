@@ -5,42 +5,43 @@
 {% block content %}
 <div class="container py-5">
 
-    <!-- Header do Perfil -->
+   <!-- Header do Perfil -->
     <div class="text-center mb-5">
         <div class="avatar rounded-circle mx-auto mb-3"></div>
-        <h2 class="fw-bold text-dark">{{ current_user.nome }}</h2>
-        <p class="text-muted">{{ current_user.username }}</p>
+        <h2 class="fw-bold">{{ current_user.nome }}</h2>
+        <p class="{% if current_user.tema_escuro %}text-light{% else %}text-muted{% endif %}">{{ current_user.username }}</p>
     </div>
+
 
     <div class="row g-4">
 
         <!-- Card: Formulário de Edição -->
         <div class="col-lg-6">
-            <div class="card border-0 rounded-4 shadow-sm hover-card">
-                <div class="card-header bg-dark text-white rounded-top-4">
+            <div class="card border-0 rounded-4 shadow-sm hover-card {% if current_user.tema_escuro %}bg-dark text-white{% endif %}">
+                <div class="card-header rounded-top-4">
                     <h5 class="mb-0"><i class="bi bi-person-circle me-2"></i>Editar Perfil</h5>
                 </div>
                 <div class="card-body p-4">
                     <form method="POST" action="{{ url_for('routes.perfil') }}">
                         <div class="mb-3">
                             <label for="nome" class="form-label">Nome</label>
-                            <input type="text" class="form-control" id="nome" name="nome" value="{{ current_user.nome }}" required>
+                            <input type="text" class="form-control {% if current_user.tema_escuro %}bg-secondary text-white border-light{% endif %}" id="nome" name="nome" value="{{ current_user.nome }}" required>
                         </div>
                         <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
-                            <input type="text" class="form-control" id="username" name="username" value="{{ current_user.username }}" required>
+                            <input type="text" class="form-control {% if current_user.tema_escuro %}bg-secondary text-white border-light{% endif %}" id="username" name="username" value="{{ current_user.username }}" required>
                         </div>
                         <div class="mb-3">
                             <label for="email" class="form-label">E-mail</label>
-                            <input type="email" class="form-control" id="email" name="email" value="{{ current_user.email }}" disabled>
+                            <input type="email" class="form-control {% if current_user.tema_escuro %}bg-secondary text-white border-light{% endif %}" id="email" name="email" value="{{ current_user.email }}" disabled>
                         </div>
                         <div class="mb-3">
                             <label for="senha" class="form-label">Nova Senha</label>
-                            <input type="password" class="form-control" id="senha" name="senha" placeholder="Deixe em branco para manter a senha atual">
+                            <input type="password" class="form-control {% if current_user.tema_escuro %}bg-secondary text-white border-light{% endif %}" id="senha" name="senha" placeholder="Deixe em branco para manter a senha atual">
                         </div>
                         <div class="mb-3">
                             <label for="confirmar_senha" class="form-label">Confirmar Senha</label>
-                            <input type="password" class="form-control" id="confirmar_senha" name="confirmar_senha" placeholder="Deixe em branco para manter a senha atual">
+                            <input type="password" class="form-control {% if current_user.tema_escuro %}bg-secondary text-white border-light{% endif %}" id="confirmar_senha" name="confirmar_senha" placeholder="Deixe em branco para manter a senha atual">
                         </div>
                         <button type="submit" class="btn btn-success w-100 fw-bold"><i class="bi bi-save me-1"></i> Salvar Alterações</button>
                     </form>
@@ -48,20 +49,19 @@
             </div>
         </div>
 
-
         <!-- Card: Histórico de Atividades -->
         <div class="col-lg-6">
-            <div class="card border-0 rounded-4 shadow-sm hover-card">
-                <div class="card-header bg-dark text-white rounded-top-4">
+            <div class="card border-0 rounded-4 shadow-sm hover-card {% if current_user.tema_escuro %}bg-dark text-white{% endif %}">
+                <div class="card-header rounded-top-4">
                     <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Histórico de Atividades</h5>
                 </div>
                 <div class="card-body p-4">
                     {% if atividades %}
                         <ul class="list-group list-group-flush">
                             {% for atividade in atividades %}
-                                <li class="list-group-item d-flex justify-content-between align-items-center border-0 mb-2 rounded-3 bg-white shadow-sm">
+                                <li class="list-group-item d-flex justify-content-between align-items-center border-0 mb-2 rounded-3 {% if current_user.tema_escuro %}bg-secondary text-white{% endif %}">
                                     {{ atividade.descricao }}
-                                    <span class="badge bg-success rounded-pill">
+                                    <span class="badge rounded-pill {% if current_user.tema_escuro %}bg-light text-dark{% else %}bg-primary{% endif %}">
                                         {{ atividade.data.strftime('%d/%m/%Y %H:%M') }}
                                     </span>
                                 </li>
@@ -76,8 +76,8 @@
 
         <!-- Card: Configurações & Informações -->
         <div class="col-lg-6">
-            <div class="card border-0 rounded-4 shadow-sm hover-card">
-                <div class="card-header bg-dark text-white rounded-top-4">
+            <div class="card border-0 rounded-4 shadow-sm hover-card {% if current_user.tema_escuro %}bg-dark text-white{% endif %}">
+                <div class="card-header rounded-top-4">
                     <h5 class="mb-0"><i class="bi bi-gear-fill me-2"></i>Configurações & Info</h5>
                 </div>
                 <div class="card-body p-4">
@@ -88,10 +88,14 @@
                         <input class="form-check-input" type="checkbox" id="notificacoes" {% if current_user.notificacoes %}checked{% endif %}>
                         <label class="form-check-label" for="notificacoes">Receber notificações por e-mail</label>
                     </div>
-                    <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" id="temaEscuro" {% if current_user.tema_escuro %}checked{% endif %}>
-                        <label class="form-check-label" for="temaEscuro">Ativar tema escuro</label>
-                    </div>
+
+                    <form method="POST" action="{{ url_for('routes.toggle_theme') }}">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="temaEscuro" name="tema_escuro" onchange="this.form.submit()" {% if current_user.tema_escuro %}checked{% endif %}>
+                            <label class="form-check-label" for="temaEscuro">Ativar modo escuro</label>
+                        </div>
+                    </form>
+
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" id="resumoSemanal" {% if current_user.resumo_semanal %}checked{% endif %}>
                         <label class="form-check-label" for="resumoSemanal">Receber resumo semanal</label>
@@ -104,52 +108,43 @@
 </div>
 
 <style>
-    body {
-        background-color: #f5f5f5;
-        color: #495057;
-        font-family: 'Segoe UI', sans-serif;
-    }
+/* Inputs e selects */
+input.form-control,
+select.form-control,
+textarea.form-control {
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+body.dark input.form-control,
+body.dark select.form-control,
+body.dark textarea.form-control {
+    background-color: #2a2a2a;
+    color: #fff;
+    border: 1px solid #555;
+}
+body.dark input.form-control::placeholder,
+body.dark textarea.form-control::placeholder {
+    color: #ccc;
+}
+body.light input.form-control,
+body.light select.form-control,
+body.light textarea.form-control {
+    background-color: #fff;
+    color: #000;
+    border: 1px solid #ced4da;
+}
 
-    .avatar {
-        width: 120px;
-        height: 120px;
-        background-image: url('https://via.placeholder.com/120');
-        background-size: cover;
-        background-position: center;
-        margin-bottom: 15px;
-        border: 3px solid #28a745;
-    }
+/* Cards e headers */
+body.dark .card { background-color: #1f1f1f; color: #e0e0e0; }
+body.dark .card-header { background-color: #212121; color: #fff; }
+body.light .card { background-color: #fff; color: #495057; }
+body.light .card-header { background-color: #343a40; color: #fff; }
 
-    .card-header {
-        font-weight: 600;
-    }
+/* Lista de atividades */
+body.dark .list-group-item { background-color: #2a2a2a !important; color: #e0e0e0; }
+body.light .list-group-item { background-color: #fff !important; color: #495057; }
 
-    .shadow-sm {
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .hover-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-
-    .list-group-item.bg-white {
-        background-color: #fff !important;
-    }
-
-    .text-muted {
-        color: #6c757d !important;
-    }
-
-    .btn-success {
-        background-color: #28a745;
-        border-color: #28a745;
-    }
-
-    .btn-success:hover {
-        background-color: #218838;
-        border-color: #1e7e34;
-    }
+/* Avatar */
+.avatar { width: 120px; height: 120px; background-image: url('https://via.placeholder.com/120'); background-size: cover; background-position: center; margin-bottom: 15px; border: 3px solid #28a745; }
 </style>
 {% endblock %}
+
