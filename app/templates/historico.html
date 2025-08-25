@@ -1,110 +1,120 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Histórico de Movimentações</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/1041/1041916.png">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-</head>
-<body class="bg-light">
-    <!-- Navbar -->
-    {% extends "navbar.html" %}
+{% extends "navbar.html" %}
 
-        {% block title %}Histórico de Movimentações{% endblock %}
+{% block title %}Histórico de Movimentações{% endblock %}
 
-    {% block content %}
-    </nav>
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header d-flex justify-content-between align-items-center {% if current_user.tema_escuro %}bg-dark text-white{% else %}bg-dark text-white{% endif %}">
+                    <h5 class="mb-0"><i class="bi bi-clock-history"></i> Histórico de Movimentações</h5>
+                    <span class="badge bg-secondary">{{ pagination.total }} registros</span>
+                </div>
 
-
-    <!-- Conteúdo principal -->
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <div class="card shadow-lg border-0 rounded-3">
-                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0"><i class="bi bi-clock-history"></i> Histórico de Movimentações</h5>
-                        <span class="badge bg-secondary">{{ historico|length }} registros</span>
-                    </div>
-
-                    <!-- Opções de ordenação -->
-                    <div class="card-body">
-                        <div class="d-flex justify-content-start mb-3 flex-wrap gap-2">
-                            <span class="me-2">Ordenar por:</span>
-                            <a href="{{ url_for('routes.historico', ordenar='data', ordem='desc') }}" 
-                               class="btn btn-sm btn-outline-primary {% if ordenar_por=='data' and ordem=='desc' %}active{% endif %}">
-                               Data ↓
-                            </a>
-                            <a href="{{ url_for('routes.historico', ordenar='data', ordem='asc') }}" 
-                               class="btn btn-sm btn-outline-primary {% if ordenar_por=='data' and ordem=='asc' %}active{% endif %}">
-                               Data ↑
-                            </a>
-                            <a href="{{ url_for('routes.historico', ordenar='acao', ordem='asc') }}" 
-                               class="btn btn-sm btn-outline-primary {% if ordenar_por=='acao' and ordem=='asc' %}active{% endif %}">
-                               Ação ↑
-                            </a>
-                            <a href="{{ url_for('routes.historico', ordenar='acao', ordem='desc') }}" 
-                               class="btn btn-sm btn-outline-primary {% if ordenar_por=='acao' and ordem=='desc' %}active{% endif %}">
-                               Ação ↓
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover table-striped mb-0 align-middle">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>Data/Hora</th>
-                                        <th>Produto</th>
-                                        <th>Usuário</th>
-                                        <th>Ação</th>
-                                        <th>Qtd. Anterior</th>
-                                        <th>Qtd. Nova</th>
-                                        <th>Motivo</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for h in historico %}
-                                    <tr>
-                                        <td>{{ h.data_hora.strftime('%d/%m/%Y %H:%M:%S') }}</td>
-                                        <td>{{ h.produto_nome if h.produto_nome else '-' }}</td>
-                                        <td>{{ h.usuario }}</td>
-                                        <td>
-                                            {% if h.acao == "Entrada" %}
-                                                <span class="badge bg-success"><i class="bi bi-arrow-down-circle"></i> {{ h.acao }}</span>
-                                            {% elif h.acao == "Saída" %}
-                                                <span class="badge bg-danger"><i class="bi bi-arrow-up-circle"></i> {{ h.acao }}</span>
-                                            {% else %}
-                                                <span class="badge bg-secondary">{{ h.acao }}</span>
-                                            {% endif %}
-                                        </td>
-                                        <td>{{ h.quantidade_anterior if h.quantidade_anterior is not none else '-' }}</td>
-                                        <td>{{ h.quantidade_nova if h.quantidade_nova is not none else '-' }}</td>
-                                        <td>{{ h.motivo if h.motivo else '-' }}</td>
-                                    </tr>
-                                    {% else %}
-                                    <tr>
-                                        <td colspan="7" class="text-center text-muted py-4">
-                                            <i class="bi bi-info-circle"></i> Nenhuma movimentação registrada.
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="card-footer text-end small text-muted">
-                        Atualizado em {{ agora.strftime('%d/%m/%Y %H:%M:%S') }}
+                <!-- Opções de ordenação -->
+                <div class="card-body">
+                    <div class="d-flex justify-content-start mb-3 flex-wrap gap-2">
+                        <span class="me-2">Ordenar por:</span>
+                        <a href="{{ url_for('routes.historico', ordenar='data', ordem='desc') }}" 
+                           class="btn btn-sm btn-outline-primary {% if ordenar_por=='data' and ordem=='desc' %}active{% endif %}">
+                           Data ↓
+                        </a>
+                        <a href="{{ url_for('routes.historico', ordenar='data', ordem='asc') }}" 
+                           class="btn btn-sm btn-outline-primary {% if ordenar_por=='data' and ordem=='asc' %}active{% endif %}">
+                           Data ↑
+                        </a>
+                        <a href="{{ url_for('routes.historico', ordenar='acao', ordem='asc') }}" 
+                           class="btn btn-sm btn-outline-primary {% if ordenar_por=='acao' and ordem=='asc' %}active{% endif %}">
+                           Ação ↑
+                        </a>
+                        <a href="{{ url_for('routes.historico', ordenar='acao', ordem='desc') }}" 
+                           class="btn btn-sm btn-outline-primary {% if ordenar_por=='acao' and ordem=='desc' %}active{% endif %}">
+                           Ação ↓
+                        </a>
                     </div>
                 </div>
+
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped mb-0 align-middle {% if current_user.tema_escuro %}table-dark{% endif %}">
+                            <thead class="{% if current_user.tema_escuro %}table-secondary text-dark{% else %}table-dark{% endif %}">
+                                <tr>
+                                    <th>Data/Hora</th>
+                                    <th>Produto</th>
+                                    <th>Usuário</th>
+                                    <th>Ação</th>
+                                    <th>Qtd. Anterior</th>
+                                    <th>Qtd. Nova</th>
+                                    <th>Motivo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for h in historico %}
+                                <tr>
+                                    <td>{{ h.data_hora.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+                                    <td>{{ h.produto_nome or '-' }}</td>
+                                    <td>{{ h.usuario }}</td>
+                                    <td>
+                                        {% if h.acao == "Entrada" %}
+                                            <span class="badge {% if current_user.tema_escuro %}bg-success{% else %}bg-success{% endif %}">
+                                                <i class="bi bi-arrow-down-circle"></i> {{ h.acao }}
+                                            </span>
+                                        {% elif h.acao == "Saída" %}
+                                            <span class="badge {% if current_user.tema_escuro %}bg-danger{% else %}bg-danger{% endif %}">
+                                                <i class="bi bi-arrow-up-circle"></i> {{ h.acao }}
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ h.acao }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ h.quantidade_anterior or '-' }}</td>
+                                    <td>{{ h.quantidade_nova or '-' }}</td>
+                                    <td>{{ h.motivo or '-' }}</td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-4">
+                                        <i class="bi bi-info-circle"></i> Nenhuma movimentação registrada.
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Paginação -->
+                <div class="card-footer text-center">
+                    <nav aria-label="Paginação">
+                        <ul class="pagination justify-content-center mb-0">
+                            {% if pagination.has_prev %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('routes.historico', page=pagination.prev_num, ordenar=ordenar_por, ordem=ordem) }}">Anterior</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+                            {% endif %}
+
+                            {% for p in range(1, pagination.pages + 1) %}
+                            <li class="page-item {% if p == pagination.page %}active{% endif %}">
+                                <a class="page-link" href="{{ url_for('routes.historico', page=p, ordenar=ordenar_por, ordem=ordem) }}">{{ p }}</a>
+                            </li>
+                            {% endfor %}
+
+                            {% if pagination.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('routes.historico', page=pagination.next_num, ordenar=ordenar_por, ordem=ordem) }}">Próximo</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item disabled"><span class="page-link">Próximo</span></li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+
             </div>
         </div>
     </div>
-    {% endblock %}
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+</div>
+{% endblock %}
