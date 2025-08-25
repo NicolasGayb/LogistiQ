@@ -144,27 +144,34 @@
     var estoqueQuantidades = {{ estoque_quantidades|tojson|safe }};
     var estoqueValores = {{ estoque_valores|tojson|safe }};
 
-    function getChartColors(isDark) {
+    var ctxQtd = document.getElementById('quantidadeChart').getContext('2d');
+    var ctxVal = document.getElementById('valorChart').getContext('2d');
+
+    var darkMode = {{ 'true' if current_user.tema_escuro else 'false' }};
+
+    // Função para cores do gráfico
+    function getChartColors(dark) {
         return {
-            quantidade: isDark ? 'rgba(0,123,255,0.7)' : 'rgba(0,123,255,0.5)',
-            valor: isDark ? 'rgba(25,135,84,0.7)' : 'rgba(25,135,84,0.5)',
+            bgQtd: dark ? 'rgba(0,123,255,0.7)' : 'rgba(0,123,255,0.5)',
+            bgVal: dark ? 'rgba(25,135,84,0.7)' : 'rgba(25,135,84,0.5)',
             borderQtd: 'rgba(0,123,255,1)',
-            borderVal: 'rgba(25,135,84,1)'
+            borderVal: 'rgba(25,135,84,1)',
+            fontColor: dark ? '#fff' : '#000'
         };
     }
 
-    var colors = getChartColors({{ 'true' if current_user.tema_escuro else 'false' }});
+    var colors = getChartColors(darkMode);
 
     if (estoqueLabels.length > 0) {
         // Quantidade
-        new Chart(document.getElementById('quantidadeChart').getContext('2d'), {
+        new Chart(ctxQtd, {
             type: 'bar',
             data: {
                 labels: estoqueLabels,
                 datasets: [{
                     label: 'Quantidade',
                     data: estoqueQuantidades,
-                    backgroundColor: colors.quantidade,
+                    backgroundColor: colors.bgQtd,
                     borderColor: colors.borderQtd,
                     borderWidth: 1,
                     borderRadius: 5
@@ -172,23 +179,26 @@
             },
             options: {
                 responsive: true,
-                plugins: { legend: { labels: { color: {{ '"#fff"' if current_user.tema_escuro else '"#000"' }} }, title: { display: true, text: 'Quantidade de Produtos', color: {{ '"#fff"' if current_user.tema_escuro else '"#000"' }} } },
-                scales: { 
-                    x: { ticks: { color: {{ '"#fff"' if current_user.tema_escuro else '"#000"' }} } },
-                    y: { ticks: { color: {{ '"#fff"' if current_user.tema_escuro else '"#000"' }} }, beginAtZero: true } 
+                plugins: {
+                    legend: { labels: { color: colors.fontColor } },
+                    title: { display: true, text: 'Quantidade de Produtos', color: colors.fontColor }
+                },
+                scales: {
+                    x: { ticks: { color: colors.fontColor }, grid: { color: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' } },
+                    y: { ticks: { color: colors.fontColor }, beginAtZero: true, grid: { color: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' } }
                 }
             }
         });
 
         // Valor Total
-        new Chart(document.getElementById('valorChart').getContext('2d'), {
+        new Chart(ctxVal, {
             type: 'bar',
             data: {
                 labels: estoqueLabels,
                 datasets: [{
                     label: 'Valor Total (R$)',
                     data: estoqueValores,
-                    backgroundColor: colors.valor,
+                    backgroundColor: colors.bgVal,
                     borderColor: colors.borderVal,
                     borderWidth: 1,
                     borderRadius: 5
@@ -196,10 +206,13 @@
             },
             options: {
                 responsive: true,
-                plugins: { legend: { labels: { color: {{ '"#fff"' if current_user.tema_escuro else '"#000"' }} }, title: { display: true, text: 'Valor Total por Produto', color: {{ '"#fff"' if current_user.tema_escuro else '"#000"' }} } },
-                scales: { 
-                    x: { ticks: { color: {{ '"#fff"' if current_user.tema_escuro else '"#000"' }} } },
-                    y: { ticks: { color: {{ '"#fff"' if current_user.tema_escuro else '"#000"' }} }, beginAtZero: true } 
+                plugins: {
+                    legend: { labels: { color: colors.fontColor } },
+                    title: { display: true, text: 'Valor Total por Produto', color: colors.fontColor }
+                },
+                scales: {
+                    x: { ticks: { color: colors.fontColor }, grid: { color: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' } },
+                    y: { ticks: { color: colors.fontColor }, beginAtZero: true, grid: { color: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' } }
                 }
             }
         });
