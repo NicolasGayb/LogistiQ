@@ -1,11 +1,12 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
 from flask_login import login_required, current_user
 from app import db
+from app.decorators import role_required
+from app.forms import RequestResetForm, ResetPasswordForm
 from app.models import Produto, HistoricoMovimentacao, Atividade, Usuario
-from app.utils import registrar_atividade, listar_atividades
+from app.utils import registrar_atividade, listar_atividades, generate_reset_token, verify_reset_token, send_reset_email
 from datetime import datetime
 import pytz
-from app.decorators import role_required    
 
 routes = Blueprint('routes', __name__)
 utc = pytz.utc
@@ -73,7 +74,7 @@ def adicionar_produto():
 # ------------------------
 @routes.route('/atualizar/<int:id>', methods=['POST'])
 @login_required
-@role_required('administrador', 'usuario_padrao', 'supervisor')  # Admin, Usuário padrão e Supervisor
+@role_required('administrador', 'usuario_padrao', 'supervisor')
 def atualizar_produto(id):
     produto = Produto.query.get_or_404(id)
     quantidade_anterior = produto.quantidade
@@ -107,7 +108,7 @@ def atualizar_produto(id):
 # ------------------------
 @routes.route('/remover/<int:id>')
 @login_required
-@role_required('administrador', 'supervisor')  # Apenas Admin e Supervisor podem remover
+@role_required('administrador', 'supervisor')
 def remover_produto(id):
     produto = Produto.query.get_or_404(id)
 
@@ -148,17 +149,14 @@ def historico():
 
     query = HistoricoMovimentacao.query
 
-    # Ordenação
     if ordenar_por == 'acao':
         query = query.order_by(HistoricoMovimentacao.acao.asc() if ordem == 'asc' else HistoricoMovimentacao.acao.desc())
     else:
         query = query.order_by(HistoricoMovimentacao.data_hora.asc() if ordem == 'asc' else HistoricoMovimentacao.data_hora.desc())
 
-    # Paginação
     pagination = query.paginate(page=page, per_page=per_page, error_out=False)
     historico = pagination.items
 
-    # Ajuste de fuso horário
     for h in historico:
         h.data_hora = h.data_hora.replace(tzinfo=utc).astimezone(brt)
 
@@ -178,8 +176,7 @@ def historico():
 def perfil():
     if request.method == 'POST':
         nome = request.form.get('nome')
-        # Email não pode ser alterado
-        senha = request.form.get('senha')  # opcional
+        senha = request.form.get('senha')
 
         current_user.nome = nome
         if senha:
@@ -193,7 +190,7 @@ def perfil():
     return render_template('perfil.html', usuario=current_user, atividades=atividades)
 
 # ------------------------
-# Relatório
+# RELATÓRIO
 # ------------------------
 @routes.route('/relatorio')
 @login_required
@@ -217,14 +214,15 @@ def relatorio():
     )
 
 # ------------------------
-
-# Página para acesso negado
+# ACESSO NEGADO
+# ------------------------
 @routes.route('/acesso_negado')
 def acesso_negado():
     return render_template('acesso_negado.html'), 403
-# ------------------------
 
+# ------------------------
 # DARK MODE TOGGLE
+# ------------------------
 @routes.route('/toggle_theme', methods=['GET', 'POST'])
 @login_required
 def toggle_theme():
@@ -235,3 +233,36 @@ def toggle_theme():
         return redirect(url_for('routes.perfil'))
 
     return render_template('perfil.html', atividades=atividades, usuario=current_user)
+
+# ------------------------
+# RECUPERAÇÃO DE SENHA
+# ------------------------
+@routes.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    form = RequestResetForm()
+    if form.validate_on_submit():
+        user = Usuario.query.filter_by(email=form.email.data).first()
+        if user:
+            token = generate_reset_token(user.id)
+            send_reset_email(user, token)
+        flash('Se o email estiver cadastrado, você receberá instruções para redefinir a senha.', 'info')
+        return redirect(url_for('auth.login'))
+    return render_template('forgot_password.html', form=form)
+
+@routes.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    user_id = verify_reset_token(token)
+    if not user_id:
+        flash('O link é inválido ou expirou.', 'warning')
+        return redirect(url_for('routes.forgot_password'))
+
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        user = Usuario.query.get(user_id)
+        user.set_password(form.password.data)
+        db.session.commit()
+
+        flash('Senha redefinida com sucesso! Faça login.', 'success')
+        return redirect(url_for('auth.login'))
+
+    return render_template('reset_password.html', form=form)

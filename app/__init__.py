@@ -1,26 +1,44 @@
 # Inicializa o app Flask, configura extensões e registra rotas
 
 from flask import Flask
+from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate  # <-- Importa Flask-Migrate
+from dotenv import load_dotenv
+import os
 
 # Instancia as extensões
 db = SQLAlchemy()
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'  # Define a rota padrão para login
-migrate = Migrate()  # <-- Instancia o Migrate
+migrate = Migrate()
+mail = Mail()  # <-- Agora o mail é global, fora da função
+load_dotenv()
 
 def create_app():
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'sua_chave_secreta_segura'
+    app.secret_key = os.environ.get('SECRET_KEY')
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:LkUWNCvpNYKUiMGgzFUiMtCBxiuSBSYI@hopper.proxy.rlwy.net:46545/railway'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    
+    # Configuração do e-mail
+    app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+    app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+    app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER')
+    app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT', 587))
+    app.config['MAIL_USE_TLS'] = os.environ.get('MAIL_USE_TLS', 'True') == 'True'
+    app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER')
 
-    # Inicializa as extensões com a aplicação
+    
+    # Configuração JWT
+    app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
+
+    # Inicializa as extensões
     db.init_app(app)
     login_manager.init_app(app)
-    migrate.init_app(app, db)  # <-- Inicializa o Migrate
+    migrate.init_app(app, db)
+    mail.init_app(app)
 
     # Importa modelo de usuário para o carregamento de sessões
     from app.models import Usuario
