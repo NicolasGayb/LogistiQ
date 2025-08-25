@@ -34,6 +34,7 @@ deploy-job:
     - git checkout main
     - git add .
     - git commit -m "Atualização automática via GitLab CI [skip ci]" || echo "Sem alterações para commitar"
-    - git push github main
+    - git pull github main --rebase || echo "Falha no pull, ignorando"
+    - git push github main --force-with-lease
   only:
     - main
