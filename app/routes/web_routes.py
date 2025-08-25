@@ -207,3 +207,12 @@ def acesso_negado():
     return render_template('acesso_negado.html'), 403
 # ------------------------
 
+# DARK MODE TOGGLE
+@routes.route('/toggle_theme', methods=['POST'])
+@login_required
+def toggle_theme():
+    current_user.tema_escuro = 'tema_escuro' in request.form
+    db.session.commit()
+
+    flash('Preferência de tema atualizada!', 'success')
+    return redirect(url_for('routes.perfil'))

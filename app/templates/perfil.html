@@ -88,7 +88,7 @@
                         <input class="form-check-input" type="checkbox" id="notificacoes" {% if current_user.notificacoes %}checked{% endif %}>
                         <label class="form-check-label" for="notificacoes">Receber notificações por e-mail</label>
                     </div>
-                    <form method="POST" action="{{ url_for('routes.toggle_tema') }}">
+                    <form method="POST" action="{{ url_for('routes.toggle_theme') }}">
                         <div class="form-check form-switch mb-3">
                             <input
                             class="form-check-input"
