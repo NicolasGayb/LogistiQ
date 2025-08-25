@@ -1,6 +1,7 @@
 from . import db, login_manager
 from flask_login import UserMixin
 from datetime import datetime
+from werkzeug.security import generate_password_hash
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -8,6 +9,8 @@ def load_user(user_id):
 
 # Modelo de usuário
 class Usuario(db.Model, UserMixin):
+    def set_password(self, password):
+        self.senha = generate_password_hash(password)
     __tablename__ = 'usuario'
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(150), nullable=False)
