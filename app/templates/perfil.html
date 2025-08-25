@@ -88,10 +88,18 @@
                         <input class="form-check-input" type="checkbox" id="notificacoes" {% if current_user.notificacoes %}checked{% endif %}>
                         <label class="form-check-label" for="notificacoes">Receber notificações por e-mail</label>
                     </div>
-                    <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" id="temaEscuro" {% if current_user.tema_escuro %}checked{% endif %}>
-                        <label class="form-check-label" for="temaEscuro">Ativar tema escuro</label>
-                    </div>
+                    <form method="POST" action="{{ url_for('routes.toggle_tema') }}">
+                        <div class="form-check form-switch mb-3">
+                            <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="temaEscuro"
+                            name="tema_escuro"
+                            onchange="this.form.submit()"
+                            {% if current_user.tema_escuro %}checked{% endif %}>
+                        <label class="form-check-label" for="temaEscuro">Ativar modo escuro</label>
+                        </div>
+                    </form>
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" id="resumoSemanal" {% if current_user.resumo_semanal %}checked{% endif %}>
                         <label class="form-check-label" for="resumoSemanal">Receber resumo semanal</label>
