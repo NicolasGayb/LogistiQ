@@ -1,40 +1,52 @@
-# 🧮 ControleEstoqueV2 · ![Python](https://img.shields.io/badge/Python-3.10-blue) ![Flask](https://img.shields.io/badge/Flask-2.3-lightgrey) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)
+# 🧮 ControleEstoqueV2 · ![Python](https://img.shields.io/badge/Python-3.10-blue) ![Flask](https://img.shields.io/badge/Flask-2.3-lightgrey) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue) ![License](https://img.shields.io/badge/License-MIT-green)
 
-Sistema web simples para controle de estoque, desenvolvido com Python e
-Flask. Ideal para pequenos negócios ou como projeto de aprendizado.\
-Agora com suporte a **PostgreSQL** para uso em produção e hospedagem em
-plataformas como **Railway** ou **Render**.
+Sistema web simples para controle de estoque, desenvolvido com Python e Flask. Ideal para pequenos negócios ou como projeto de aprendizado.  
+Agora com suporte a **PostgreSQL** para uso em produção e hospedagem em plataformas como **Railway** ou **Render**.
 
 ## 📑 Tabela de Conteúdo
 
--   [Funcionalidades](#funcionalidades)
--   [Tecnologias Utilizadas](#tecnologias-utilizadas)
--   [Estrutura do Projeto](#estrutura-do-projeto)
--   [Instalação](#instalação)
--   [Uso](#uso)
--   [Banco de Dados](#banco-de-dados)
--   [Dependências](#dependências)
--   [Autor](#autor)
+- [Funcionalidades](#funcionalidades)
+- [Destaques Visuais](#destaques-visuais)
+- [Tecnologias Utilizadas](#tecnologias-utilizadas)
+- [Estrutura do Projeto](#estrutura-do-projeto)
+- [Instalação](#instalação)
+- [Uso](#uso)
+- [Banco de Dados](#banco-de-dados)
+- [Dependências](#dependências)
+- [Autor](#autor)
 
 ## ✅ Funcionalidades
 
--   👤 Cadastro e login de usuários com autenticação segura
--   📦 Registro, edição e exclusão de produtos
--   🗑 Correção da exclusão de produtos com tratamento de erros
--   📊 Visualização de estoque em tempo real
--   🔄 Controle de movimentações (entradas/saídas)
--   🌐 Suporte a **PostgreSQL** em produção e **SQLite** em ambiente
-    local
--   🚀 Deploy simplificado no **Railway** ou **Render**
+- 👤 Cadastro e login de usuários com autenticação segura
+- 📦 Registro, edição e exclusão de produtos
+- 🗑 Correção da exclusão de produtos com tratamento de erros
+- 📊 Visualização de estoque em tempo real
+- 🔄 Controle de movimentações (entradas/saídas)
+- 🌐 Suporte a **PostgreSQL** em produção e **SQLite** em ambiente local
+- 🚀 Deploy simplificado no **Railway** ou **Render**
+- 🌙 Modo escuro completo para interface
+- 📈 Gráficos interativos de quantidade e valor total de produtos
+- 📝 Perfil do usuário com histórico de atividades e configurações personalizadas
+
+## ✨ Destaques Visuais
+
+- **Tema Escuro/Claro:** todo o sistema suporta alternância de tema, incluindo cards, tabelas e formulários.
+- **Gráficos Dinâmicos:** gráficos de barras para quantidade e valor total de produtos, atualizados em tempo real.
+- **Inputs e Formulários Estilizados:** campos de texto, número e senha adaptam cores ao tema ativo.
+- **Perfil do Usuário:** seção de perfil com avatar, histórico de atividades, configurações de notificações e alternância de tema.
+- **Feedback Visual:** mensagens e badges com cores consistentes, alertas e tooltips melhorados.
+- **Hover Effects:** cards com efeito sutil ao passar o mouse, dando sensação de interatividade.
 
 ## 🛠 Tecnologias Utilizadas
 
--   [Python 3](https://www.python.org/)
--   [Flask](https://flask.palletsprojects.com/)
--   [Flask-Login](https://flask-login.readthedocs.io/)
--   [Flask-SQLAlchemy](https://flask-sqlalchemy.palletsprojects.com/)
--   [SQLite](https://www.sqlite.org/index.html) (desenvolvimento local)
--   [PostgreSQL](https://www.postgresql.org/) (produção)
+- [Python 3](https://www.python.org/)
+- [Flask](https://flask.palletsprojects.com/)
+- [Flask-Login](https://flask-login.readthedocs.io/)
+- [Flask-SQLAlchemy](https://flask-sqlalchemy.palletsprojects.com/)
+- [SQLite](https://www.sqlite.org/index.html) (desenvolvimento local)
+- [PostgreSQL](https://www.postgresql.org/) (produção)
+- [Bootstrap 5](https://getbootstrap.com/)
+- [Chart.js](https://www.chartjs.org/)
 
 ## 🚀 Estrutura do Projeto
 
