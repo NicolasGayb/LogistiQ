@@ -12,45 +12,76 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
   <style>
-    :root{
+    :root {
       --brand-700:#2e7d32;
       --brand-600:#388e3c;
       --brand-500:#43a047;
       --brand-100:#e8f5e9;
     }
 
-    .navbar-brand .logo-mark{
-      display:inline-grid; place-items:center;
-      width:32px;height:32px; border-radius:10px;
-      background:linear-gradient(135deg,var(--brand-600),var(--brand-700));
-      color:#fff; margin-right:.5rem; font-size:1rem;
+    /* =====================
+       LIGHT THEME
+    ====================== */
+    body.light {
+      background-color: #f5f5f5;
+      color: #212529;
     }
-
-    .navbar-green{ background-color:var(--brand-700); }
-    .navbar-green .nav-link{ color:#dff5e1; }
-    .navbar-green .nav-link:hover,
-    .navbar-green .nav-link.active{
+    body.light .navbar-green { background-color: var(--brand-700); }
+    body.light .navbar-green .nav-link { color:#dff5e1; }
+    body.light .navbar-green .nav-link:hover,
+    body.light .navbar-green .nav-link.active {
       color:#fff; background-color:rgba(255,255,255,.08); border-radius:.5rem;
     }
 
-    .user-pill{
+    /* =====================
+       DARK THEME
+    ====================== */
+    body.dark {
+      background-color: #121212;
+      color: #e0e0e0;
+    }
+    body.dark .navbar-green { background-color: #1f1f1f; }
+    body.dark .navbar-green .nav-link { color:#e0e0e0; }
+    body.dark .navbar-green .nav-link:hover,
+    body.dark .navbar-green .nav-link.active {
+      color:#fff; background-color:rgba(255,255,255,.2); border-radius:.5rem;
+    }
+
+    /* Componentes comuns */
+    .navbar-brand .logo-mark {
+      display:inline-grid; place-items:center;
+      width:32px; height:32px; border-radius:10px;
+      background:linear-gradient(135deg,var(--brand-600),var(--brand-700));
+      color:#fff; margin-right:.5rem; font-size:1rem;
+    }
+    .user-pill {
       display:flex; align-items:center; gap:.5rem;
       padding:.25rem .75rem; border-radius:999px;
       background-color:rgba(255,255,255,.08);
       color:#fff; text-decoration:none;
     }
-    .user-pill:hover{ background-color:rgba(255,255,255,.15); color:#fff; }
-
-    .user-avatar{
+    .user-pill:hover { background-color:rgba(255,255,255,.15); color:#fff; }
+    .user-avatar {
       width:28px; height:28px; border-radius:50%;
       display:grid; place-items:center;
       background:linear-gradient(135deg,var(--brand-500),var(--brand-700));
       color:#fff; font-weight:600; font-size:.8rem;
     }
-    .user-name{ max-width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .user-name { max-width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .btn-logout {
+      background: linear-gradient(135deg, #43a047, #2e7d32);
+      color: #fff; border: none;
+      padding: 0.35rem 0.9rem; border-radius: 999px;
+      font-weight: 500; transition: all 0.2s ease-in-out;
+    }
+    .btn-logout:hover {
+      background: linear-gradient(135deg, #2e7d32, #43a047);
+      color: #fff; transform: translateY(-1px);
+      box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.15);
+    }
   </style>
 </head>
-<body class="bg-light">
+<body class="{% if current_user.is_authenticated and current_user.tema_escuro %}dark{% else %}light{% endif %}">
 
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark navbar-green px-3 shadow-sm">
@@ -94,18 +125,6 @@
           </a>
         </li>
         {% endif %}
-
-        <!-- Gerenciamento de usuários: apenas administrador -->
-        {# Comentado temporariamente porque o endpoint 'usuarios' não existe ainda
-        {% if current_user.role == 'administrador' %}
-        <li class="nav-item">
-          <a class="nav-link {% if request.endpoint == 'routes.usuarios' %}active{% endif %}"
-             href="{{ url_for('routes.usuarios') }}">
-            <i class="bi bi-people me-1"></i> Usuários
-          </a>
-        </li>
-        {% endif %}
-        #}
       </ul>
 
       <!-- Direita -->
@@ -118,24 +137,6 @@
           <i class="bi bi-box-arrow-right"></i> Sair
         </a>
       </div>
-
-      <style>
-      .btn-logout {
-          background: linear-gradient(135deg, #43a047, #2e7d32);
-          color: #fff;
-          border: none;
-          padding: 0.35rem 0.9rem;
-          border-radius: 999px;
-          font-weight: 500;
-          transition: all 0.2s ease-in-out;
-      }
-      .btn-logout:hover {
-          background: linear-gradient(135deg, #2e7d32, #43a047);
-          color: #fff;
-          transform: translateY(-1px);
-          box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.15);
-      }
-      </style>
     </div>
   </nav>
 
