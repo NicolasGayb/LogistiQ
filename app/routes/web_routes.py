@@ -138,20 +138,37 @@ def remover_produto(id):
 # ------------------------
 @routes.route('/historico')
 @login_required
-@role_required('administrador', 'supervisor')  # Apenas Admin e Supervisor podem ver histórico completo
+@role_required('administrador', 'supervisor')
 def historico():
+    per_page = 15
+    page = request.args.get('page', 1, type=int)
+
     ordenar_por = request.args.get('ordenar', 'data')
     ordem = request.args.get('ordem', 'desc')
 
-    campo = HistoricoMovimentacao.acao if ordenar_por == 'acao' else HistoricoMovimentacao.data_hora
-    historico = (HistoricoMovimentacao.query.order_by(campo.asc() if ordem=='asc' else campo.desc()).all())
+    query = HistoricoMovimentacao.query
 
+    # Ordenação
+    if ordenar_por == 'acao':
+        query = query.order_by(HistoricoMovimentacao.acao.asc() if ordem == 'asc' else HistoricoMovimentacao.acao.desc())
+    else:
+        query = query.order_by(HistoricoMovimentacao.data_hora.asc() if ordem == 'asc' else HistoricoMovimentacao.data_hora.desc())
+
+    # Paginação
+    pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+    historico = pagination.items
+
+    # Ajuste de fuso horário
     for h in historico:
         h.data_hora = h.data_hora.replace(tzinfo=utc).astimezone(brt)
 
     agora = datetime.now(utc).astimezone(brt)
-    return render_template('historico.html', historico=historico, agora=agora,
-                           ordenar_por=ordenar_por, ordem=ordem)
+    return render_template('historico.html',
+                           historico=historico,
+                           pagination=pagination,
+                           agora=agora,
+                           ordenar_por=ordenar_por,
+                           ordem=ordem)
 
 # ------------------------
 # PERFIL DO USUÁRIO
@@ -208,11 +225,13 @@ def acesso_negado():
 # ------------------------
 
 # DARK MODE TOGGLE
-@routes.route('/toggle_theme', methods=['POST'])
+@routes.route('/toggle_theme', methods=['GET', 'POST'])
 @login_required
 def toggle_theme():
-    current_user.tema_escuro = 'tema_escuro' in request.form
-    db.session.commit()
+    if request.method == 'POST':
+        current_user.tema_escuro = 'tema_escuro' in request.form
+        db.session.commit()
+        flash('Preferência de tema atualizada!', 'success')
+        return redirect(url_for('routes.perfil'))
 
-    flash('Preferência de tema atualizada!', 'success')
-    return redirect(url_for('routes.perfil'))
+    return render_template('perfil.html', atividades=atividades, usuario=current_user)

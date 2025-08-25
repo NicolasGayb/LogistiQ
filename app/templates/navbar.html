@@ -12,19 +12,22 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
   <style>
-    :root {
+    :root{
       --brand-700:#2e7d32;
       --brand-600:#388e3c;
       --brand-500:#43a047;
       --brand-100:#e8f5e9;
+
+      --dark-bg:#121212;
+      --dark-card:#1f1f1f;
+      --dark-text:#e0e0e0;
+      --dark-link-hover:rgba(255,255,255,.2);
     }
 
-    /* =====================
-       LIGHT THEME
-    ====================== */
+    /* ===================== LIGHT THEME ====================== */
     body.light {
-      background-color: #f5f5f5;
-      color: #212529;
+      background-color:#f5f5f5;
+      color:#212529;
     }
     body.light .navbar-green { background-color: var(--brand-700); }
     body.light .navbar-green .nav-link { color:#dff5e1; }
@@ -33,51 +36,51 @@
       color:#fff; background-color:rgba(255,255,255,.08); border-radius:.5rem;
     }
 
-    /* =====================
-       DARK THEME
-    ====================== */
+    /* ===================== DARK THEME ====================== */
     body.dark {
-      background-color: #121212;
-      color: #e0e0e0;
+      background-color: var(--dark-bg);
+      color: var(--dark-text);
     }
-    body.dark .navbar-green { background-color: #1f1f1f; }
-    body.dark .navbar-green .nav-link { color:#e0e0e0; }
+    body.dark .navbar-green { background-color: var(--dark-card); }
+    body.dark .navbar-green .nav-link { color: var(--dark-text); }
     body.dark .navbar-green .nav-link:hover,
     body.dark .navbar-green .nav-link.active {
-      color:#fff; background-color:rgba(255,255,255,.2); border-radius:.5rem;
+      color:#fff; background-color: var(--dark-link-hover); border-radius:.5rem;
     }
+    body.dark .card { background-color: var(--dark-card); color: var(--dark-text); }
 
-    /* Componentes comuns */
-    .navbar-brand .logo-mark {
+    /* ===================== Componentes comuns ====================== */
+    .navbar-brand .logo-mark{
       display:inline-grid; place-items:center;
-      width:32px; height:32px; border-radius:10px;
+      width:32px;height:32px; border-radius:10px;
       background:linear-gradient(135deg,var(--brand-600),var(--brand-700));
       color:#fff; margin-right:.5rem; font-size:1rem;
     }
-    .user-pill {
+
+    .user-pill{
       display:flex; align-items:center; gap:.5rem;
       padding:.25rem .75rem; border-radius:999px;
-      background-color:rgba(255,255,255,.08);
-      color:#fff; text-decoration:none;
+      background-color:rgba(255,255,255,.08); color:#fff; text-decoration:none;
     }
-    .user-pill:hover { background-color:rgba(255,255,255,.15); color:#fff; }
-    .user-avatar {
+    .user-pill:hover{ background-color:rgba(255,255,255,.15); color:#fff; }
+
+    .user-avatar{
       width:28px; height:28px; border-radius:50%;
       display:grid; place-items:center;
       background:linear-gradient(135deg,var(--brand-500),var(--brand-700));
       color:#fff; font-weight:600; font-size:.8rem;
     }
-    .user-name { max-width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .btn-logout {
+    .user-name{ max-width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+    .btn-logout{
       background: linear-gradient(135deg, #43a047, #2e7d32);
-      color: #fff; border: none;
-      padding: 0.35rem 0.9rem; border-radius: 999px;
-      font-weight: 500; transition: all 0.2s ease-in-out;
+      color: #fff; border:none;
+      padding: 0.35rem 0.9rem; border-radius:999px;
+      font-weight:500; transition: all 0.2s ease-in-out;
     }
-    .btn-logout:hover {
+    .btn-logout:hover{
       background: linear-gradient(135deg, #2e7d32, #43a047);
-      color: #fff; transform: translateY(-1px);
-      box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.15);
+      transform: translateY(-1px); box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.15);
     }
   </style>
 </head>
@@ -96,38 +99,39 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarContent">
-      <!-- Esquerda -->
+      <!-- Menu esquerdo -->
       <ul class="navbar-nav me-auto gap-1">
-        <!-- Início sempre visível -->
         <li class="nav-item">
-          <a class="nav-link {% if request.endpoint == 'routes.index' %}active{% endif %}"
-             href="{{ url_for('routes.index') }}">
+          <a class="nav-link {% if request.endpoint == 'routes.index' %}active{% endif %}" href="{{ url_for('routes.index') }}">
             <i class="bi bi-house-door me-1"></i> Início
           </a>
         </li>
 
-        <!-- Histórico: apenas administrador e supervisor -->
         {% if current_user.role in ['administrador', 'supervisor'] %}
         <li class="nav-item">
-          <a class="nav-link {% if request.endpoint == 'routes.historico' %}active{% endif %}"
-             href="{{ url_for('routes.historico') }}">
+          <a class="nav-link {% if request.endpoint == 'routes.historico' %}active{% endif %}" href="{{ url_for('routes.historico') }}">
             <i class="bi bi-clock-history me-1"></i> Histórico
           </a>
         </li>
-        {% endif %}
-
-        <!-- Relatórios: apenas administrador e supervisor -->
-        {% if current_user.role in ['administrador', 'supervisor'] %}
         <li class="nav-item">
-          <a class="nav-link {% if request.endpoint == 'routes.relatorio' %}active{% endif %}"
-             href="{{ url_for('routes.relatorio') }}">
+          <a class="nav-link {% if request.endpoint == 'routes.relatorio' %}active{% endif %}" href="{{ url_for('routes.relatorio') }}">
             <i class="bi bi-graph-up me-1"></i> Relatórios
           </a>
         </li>
         {% endif %}
+
+        {# Futuro: gerenciamento de usuários
+        {% if current_user.role == 'administrador' %}
+        <li class="nav-item">
+          <a class="nav-link {% if request.endpoint == 'routes.usuarios' %}active{% endif %}" href="{{ url_for('routes.usuarios') }}">
+            <i class="bi bi-people me-1"></i> Usuários
+          </a>
+        </li>
+        {% endif %}
+        #}
       </ul>
 
-      <!-- Direita -->
+      <!-- Menu direito -->
       <div class="d-flex align-items-center gap-3">
         <a href="{{ url_for('routes.perfil') }}" class="user-pill">
           <span class="user-avatar">{{ (current_user.nome[:1] if current_user and current_user.nome else 'U')|upper }}</span>
@@ -145,7 +149,6 @@
     {% block content %}{% endblock %}
   </div>
 
-  <!-- Bootstrap bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
