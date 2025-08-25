@@ -1,41 +1,49 @@
 stages:
+  - setup
   - test
   - deploy
 
-image: python 3.10
-
-variables:
-  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
-  VENV_PATH: "$CI_PROJECT_DIR/venv"
-
-before_script:
-  - python3 -m venv $VENV_PATH
-  - source $VENV_PATH/bin/activate
-  - pip install --upgrade pip
-  - pip install -r requirements.txt
-
-test:
-  stage: test
+# Stage de setup: prepara o ambiente
+setup-job:
+  stage: setup
+  image: python:3.11
+  before_script:
+    - python -m venv venv
+    - source venv/bin/activate
+    - pip install --upgrade pip
+    - pip install -r requirements.txt
   script:
-    - echo "Rodando testes..."
-    - pytest tests --maxfail=1 --disable-warnings -v
+    - echo "Ambiente configurado"
   artifacts:
-    when: always
-    reports:
-      junit: report.xml
+    paths:
+      - venv/
 
-deploy_to_github:
-  stage: deploy
+# Job de testes
+test-job:
+  stage: test
+  image: python:3.11
+  dependencies:
+    - setup-job
   script:
-    - echo "Todos os testes passaram! Atualizando o GitHub..."
+    - source venv/bin/activate
+    - echo "Executando testes..."
+    - pytest --maxfail=1 --disable-warnings -q
+
+# Job de deploy
+deploy-job:
+  stage: deploy
+  image: python:3.11
+  dependencies:
+    - setup-job
+  before_script:
+    - source venv/bin/activate
     - git config --global user.email "nicolasgbleal@gmail.com"
-    - git config --global user.name "NicolasGayb"
-    - git remote add github https://$GITHUB_TOKEN@github.com/NicolasGayb/ControleEstoqueV2.git
-    - git fetch github
+    - git config --global user.name "NicolasGabriel"
+  script:
+    - git remote add github https://$GITHUB_TOKEN@github.com/NicolasGayb/ControleEstoqueV2.git || echo "Remote github já existe"
     - git checkout main
-    - git merge origin/main --no-edit
+    - git add .
+    - git commit -m "Atualização automática via GitLab CI [skip ci]" || echo "Sem alterações para commitar"
     - git push github main
   only:
     - main
-  dependencies:
-    - test
