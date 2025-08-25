@@ -2,6 +2,8 @@ stages:
   - test
   - deploy
 
+image: python 3.10
+
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   VENV_PATH: "$CI_PROJECT_DIR/venv"
