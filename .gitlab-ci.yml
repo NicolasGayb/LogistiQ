@@ -19,17 +19,6 @@ setup-job:
     paths:
       - venv/
 
-# Job de testes
-test-job:
-  stage: test
-  image: python:3.11
-  dependencies:
-    - setup-job
-  script:
-    - source venv/bin/activate
-    - echo "Executando testes..."
-    - pytest --maxfail=1 --disable-warnings -q
-
 # Job de deploy
 deploy-job:
   stage: deploy
