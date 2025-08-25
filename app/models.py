@@ -15,6 +15,8 @@ class Usuario(db.Model, UserMixin):
     email = db.Column(db.String(150), unique=True, nullable=False)
     senha = db.Column(db.String(200), nullable=False)
     data_cadastro = db.Column(db.DateTime, default=datetime.utcnow)
+    tema_escuro = db.Column(db.Boolean, default=False)  # Preferência de tema
+    notificacoes = db.Column(db.Boolean, default=True)  # Preferência de notificações
     
     # Papel do usuário no sistema
     role = db.Column(db.String(20), nullable=False, default='usuario')  # valores: 'admin', 'usuario', 'supervisor', 'convidado'
