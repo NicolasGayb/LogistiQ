@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  tests-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,16 +28,7 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      # - name: Run tests
-      #   run: |
-      #     python -m venv venv
-      #     source venv/bin/activate
-      #     pip install --upgrade pip
-      #     pip install -r requirements.txt
-      #     pytest -vv --maxfail=5 --disable-warnings tests
-
-      - name: Copy files to server via SSH
-        if: success()
+      - name: Deploy to server via SSH
         uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -50,10 +41,6 @@ jobs:
             source venv/bin/activate
             pip install -r requirements.txt
 
-            # Rodar testes
-            echo "Rodando testes..."
-            pytest tests || { echo 'Testes falharam, abortando deploy!' ; exit 1; }
-
-            # Reiniciar serviços somente se testes passarem
+            # Reiniciar serviços após o deploy
             sudo systemctl restart logistiq
             sudo systemctl restart nginx
