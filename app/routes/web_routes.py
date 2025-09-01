@@ -66,7 +66,7 @@ def adicionar_produto():
 
     registrar_atividade(current_user, f"Adicionou o produto '{novo_produto.nome}' ao estoque")
 
-    flash(f'Produto "{nome}" adicionado com sucesso!', 'success')
+    flash('Produto adicionado com sucesso', 'success')
     return redirect(url_for('routes.index'))
 
 # ------------------------
