@@ -96,6 +96,6 @@ def send_reset_email(user: Usuario, token: str):
     Se você não solicitou, apenas ignore este e-mail.
 
     Atenciosamente,
-    Controle de Estoque
+    LogistiQ Team
     """
     mail.send(msg)
