@@ -36,13 +36,17 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
           script: |
+            #!/bin/bash
+            set -e
+
             # Caminho do projeto
-            PROJECT_DIR="/home/logistiq"
+            PROJECT_DIR="/home/***"
             VENV_DIR="$PROJECT_DIR/venv"
 
             cd $PROJECT_DIR
 
-            # Adiciona safe directory para git
+            # Garantir que o Git tenha permissão
+            sudo chown -R $USER:$USER $PROJECT_DIR
             git config --global --add safe.directory $PROJECT_DIR
 
             # Atualiza o código do repositório
@@ -54,11 +58,17 @@ jobs:
               python3 -m venv $VENV_DIR
             fi
 
-            # Ativa venv e instala dependências
+            # Ativa virtualenv
             source $VENV_DIR/bin/activate
+
+            # Atualiza pip dentro da virtualenv
             pip install --upgrade pip
+
+            # Instala dependências dentro da virtualenv
             pip install -r requirements.txt
 
             # Reinicia serviços (sudo NOPASSWD)
-            sudo systemctl restart logistiq
+            sudo systemctl restart ***
             sudo systemctl restart nginx
+
+            echo "✅ Atualização concluída com sucesso!"
