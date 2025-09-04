@@ -1,0 +1,63 @@
+[2025-09-01 22:04:31 +0000] [63395] [INFO] Starting gunicorn 23.0.0
+[2025-09-01 22:04:31 +0000] [63395] [INFO] Listening at: unix:/home/logistiq/logistiq.sock (63395)
+[2025-09-01 22:04:31 +0000] [63395] [INFO] Using worker: sync
+[2025-09-01 22:04:31 +0000] [63396] [INFO] Booting worker with pid: 63396
+[2025-09-01 22:04:31 +0000] [63397] [INFO] Booting worker with pid: 63397
+[2025-09-01 22:04:31 +0000] [63398] [INFO] Booting worker with pid: 63398
+[2025-09-01 22:04:29 +0000] [63282] [INFO] Handling signal: term
+[2025-09-01 22:04:29 +0000] [63296] [INFO] Worker exiting (pid: 63296)
+Banco de dados inicializado.
+[2025-09-01 22:04:29 +0000] [63297] [INFO] Worker exiting (pid: 63297)
+Banco de dados inicializado.
+[2025-09-01 22:04:29 +0000] [63298] [INFO] Worker exiting (pid: 63298)
+Banco de dados inicializado.
+[2025-09-01 22:04:30 +0000] [63282] [INFO] Shutting down: Master
+s sent SIGTERM!
+[2025-09-01 22:03:56 +0000] [62610] [ERROR] Worker (pid:62611) was sent SIGTERM!
+[2025-09-01 22:03:56 +0000] [62610] [ERROR] Worker (pid:62613) was sent SIGTERM!
+[2025-09-01 22:03:57 +0000] [62610] [INFO] Shutting down: Master
+r_exception(e)
+  File "/home/logistiq/venv/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/logistiq/venv/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/logistiq/app/routes/web_routes.py", line 243, in forgot_password
+    if form.validate_on_submit():
+       ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/logistiq/venv/lib/python3.13/site-packages/flask_wtf/form.py", line 86, in validate_on_submit
+    return self.is_submitted() and self.validate(extra_validators=extra_validators)
+                                   ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/logistiq/venv/lib/python3.13/site-packages/wtforms/form.py", line 330, in validate
+    return super().validate(extra)
+           ~~~~~~~~~~~~~~~~^^^^^^^
+  File "/home/logistiq/venv/lib/python3.13/site-packages/wtforms/form.py", line 147, in validate
+    if not field.validate(self, extra):
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/logistiq/venv/lib/python3.13/site-packages/wtforms/fields/core.py", line 234, in validate
+    stop_validation = self._run_validation_chain(form, chain)
+  File "/home/logistiq/venv/lib/python3.13/site-packages/wtforms/fields/core.py", line 254, in _run_validation_chain
+    validator(form, self)
+    ~~~~~~~~~^^^^^^^^^^^^
+  File "/home/logistiq/venv/lib/python3.13/site-packages/wtforms/validators.py", line 403, in __call__
+    raise Exception(
+        "Install 'email_validator' for email validation support."
+    ) from exc
+Exception: Install 'email_validator' for email validation support.
+[2025-08-28 13:21:42 +0000] [36676] [CRITICAL] WORKER TIMEOUT (pid:36691)
+[2025-08-28 13:22:04 +0000] [36676] [CRITICAL] WORKER TIMEOUT (pid:36689)
+[2025-08-28 13:23:01 +0000] [36676] [CRITICAL] WORKER TIMEOUT (pid:36690)
+[2025-08-28 13:23:04 +0000] [36676] [ERROR] Worker (pid:36691) was sent SIGKILL! Perhaps out of memory?
+[2025-08-28 13:23:04 +0000] [74740] [INFO] Booting worker with pid: 74740
+[2025-08-28 13:23:04 +0000] [36676] [ERROR] Worker (pid:36689) was sent SIGKILL! Perhaps out of memory?
+[2025-08-28 13:23:04 +0000] [36676] [ERROR] Worker (pid:36690) was sent SIGKILL! Perhaps out of memory?
+[2025-08-28 13:23:04 +0000] [74745] [INFO] Booting worker with pid: 74745
+[2025-08-28 13:23:04 +0000] [74747] [INFO] Booting worker with pid: 74747
+[2025-08-28 14:18:32 +0000] [36676] [INFO] Handling signal: term
+[2025-08-28 14:18:32 +0000] [74745] [INFO] Worker exiting (pid: 74745)
+Banco de dados inicializado.
+[2025-08-28 14:18:32 +0000] [74747] [INFO] Worker exiting (pid: 74747)
+Banco de dados inicializado.
+[2025-08-28 14:18:32 +0000] [74740] [INFO] Worker exiting (pid: 74740)
+Banco de dados inicializado.
+[2025-08-28 14:18:34 +0000] [36676] [INFO] Shutting down: Master

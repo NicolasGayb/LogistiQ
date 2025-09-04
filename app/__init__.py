@@ -7,6 +7,7 @@ from flask_login import LoginManager
 from flask_migrate import Migrate  # <-- Importa Flask-Migrate
 from dotenv import load_dotenv
 import os
+import secrets
 
 # Instancia as extensões
 db = SQLAlchemy()
@@ -18,7 +19,8 @@ load_dotenv()
 
 def create_app():
     app = Flask(__name__)
-    app.secret_key = os.environ.get('SECRET_KEY')
+    secret_key = os.environ.get("SECRET_KEY") or secrets.token_hex(32)
+    app.secret_key = secret_key
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:LkUWNCvpNYKUiMGgzFUiMtCBxiuSBSYI@hopper.proxy.rlwy.net:46545/railway'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
