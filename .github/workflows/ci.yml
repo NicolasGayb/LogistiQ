@@ -39,36 +39,52 @@ jobs:
             #!/bin/bash
             set -e
 
-            # Caminho do projeto
-            PROJECT_DIR="/home/***"
+            # ===============================
+            # Configurações do projeto
+            # ===============================
+            PROJECT_DIR="/home/logistiq/LogistiQ"
             VENV_DIR="$PROJECT_DIR/venv"
 
+            # Comandos sudo permitidos sem senha
+            SUDO_CMDS=("systemctl restart logistiq" "systemctl restart nginx")
+
+            # ===============================
+            # Garantir permissões corretas
+            # ===============================
+            echo "🔹 Ajustando permissões do diretório do projeto..."
+            sudo chown -R logistiq:logistiq $PROJECT_DIR
+
+            # ===============================
+            # Atualizar código Git
+            # ===============================
+            echo "🔹 Atualizando repositório Git..."
             cd $PROJECT_DIR
-
-            # Garantir que o Git tenha permissão
-            sudo chown -R $USER:$USER $PROJECT_DIR
             git config --global --add safe.directory $PROJECT_DIR
-
-            # Atualiza o código do repositório
             git reset --hard
             git pull origin main
 
-            # Cria virtualenv se não existir
+            # ===============================
+            # Criar virtualenv se não existir
+            # ===============================
             if [ ! -d "$VENV_DIR" ]; then
-              python3 -m venv $VENV_DIR
+                echo "🔹 Criando virtualenv..."
+                python3 -m venv $VENV_DIR
             fi
 
-            # Ativa virtualenv
+            # ===============================
+            # Ativar virtualenv e instalar dependências
+            # ===============================
+            echo "🔹 Ativando virtualenv e instalando dependências..."
             source $VENV_DIR/bin/activate
-
-            # Atualiza pip dentro da virtualenv
             pip install --upgrade pip
-
-            # Instala dependências dentro da virtualenv
             pip install -r requirements.txt
 
-            # Reinicia serviços (sudo NOPASSWD)
-            sudo systemctl restart ***
-            sudo systemctl restart nginx
+            # ===============================
+            # Reiniciar serviços
+            # ===============================
+            echo "🔹 Reiniciando serviços..."
+            for cmd in "${SUDO_CMDS[@]}"; do
+                sudo $cmd
+            done
 
-            echo "✅ Atualização concluída com sucesso!"
+            echo "✅ Deploy concluído com sucesso!"
