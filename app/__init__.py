@@ -21,7 +21,7 @@ def create_app():
     app = Flask(__name__)
     secret_key = os.environ.get("SECRET_KEY") or secrets.token_hex(32)
     app.secret_key = secret_key
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:LkUWNCvpNYKUiMGgzFUiMtCBxiuSBSYI@hopper.proxy.rlwy.net:46545/railway'
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
     # Configuração do e-mail
