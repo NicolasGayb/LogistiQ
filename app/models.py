@@ -28,8 +28,8 @@ class Usuario(db.Model, UserMixin):
         return f'<Usuario {self.nome} ({self.username})>'
 
     # Métodos auxiliares para checar role
-    def is_admin(self):
-        return self.role == 'admin'
+    def is_administrador(self):
+        return self.role == 'administrador'
 
     def is_supervisor(self):
         return self.role == 'supervisor'

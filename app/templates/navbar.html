@@ -107,6 +107,14 @@
           </a>
         </li>
 
+        {% if current_user.role in ['administrador', 'supervisor', 'usuario'] %}
+        <li class="nav-item">
+          <a class="nav-link {% if request.endpoint == 'routes.produtos' %}active{% endif %}" href="{{ url_for('routes.produtos') }}">
+            <i class="bi bi-box-seam me-1"></i> Produtos
+          </a>
+        </li>
+        {% endif %}
+
         {% if current_user.role in ['administrador', 'supervisor'] %}
         <li class="nav-item">
           <a class="nav-link {% if request.endpoint == 'routes.historico' %}active{% endif %}" href="{{ url_for('routes.historico') }}">

@@ -18,22 +18,7 @@ brt = pytz.timezone('America/Sao_Paulo')
 @routes.route('/')
 @login_required
 def index():
-    produtos = Produto.query.all()
-    valor_total_estoque = sum(p.quantidade * p.preco for p in produtos)
-
-    estoque_labels = [p.nome for p in produtos]
-    estoque_quantidades = [p.quantidade for p in produtos]
-    estoque_valores = [p.quantidade * p.preco for p in produtos]
-
-    return render_template(
-        'index.html', 
-        produtos=produtos, 
-        usuario=current_user, 
-        valor_total_estoque=valor_total_estoque,
-        estoque_labels=estoque_labels,
-        estoque_quantidades=estoque_quantidades,
-        estoque_valores=estoque_valores
-    )
+    return render_template('index.html', usuario=current_user)
 
 # ------------------------
 # ADICIONAR PRODUTO
@@ -66,8 +51,8 @@ def adicionar_produto():
 
     registrar_atividade(current_user, f"Adicionou o produto '{novo_produto.nome}' ao estoque")
 
-    flash('Produto adicionado com sucesso', 'success')
-    return redirect(url_for('routes.index'))
+    flash(f"Produto '{novo_produto.nome}' adicionado com sucesso", "success")
+    return redirect(url_for('routes.produtos'))
 
 # ------------------------
 # ATUALIZAR PRODUTO
@@ -205,6 +190,30 @@ def relatorio():
 
     return render_template(
         'relatorio.html', 
+        produtos=produtos, 
+        usuario=current_user, 
+        valor_total_estoque=valor_total_estoque,
+        estoque_labels=estoque_labels,
+        estoque_quantidades=estoque_quantidades,
+        estoque_valores=estoque_valores
+    )
+
+# ------------------------
+# PRODUTOS
+# ------------------------
+
+@routes.route('/produtos')
+@login_required
+def produtos():
+    produtos = Produto.query.all()
+    valor_total_estoque = sum(p.quantidade * p.preco for p in produtos)
+
+    estoque_labels = [p.nome for p in produtos]
+    estoque_quantidades = [p.quantidade for p in produtos]
+    estoque_valores = [p.quantidade * p.preco for p in produtos]
+
+    return render_template(
+        'produtos.html', 
         produtos=produtos, 
         usuario=current_user, 
         valor_total_estoque=valor_total_estoque,

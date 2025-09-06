@@ -1,221 +1,69 @@
 {% extends "navbar.html" %}
 
-{% block title %}Início{% endblock %}
+{% block title %}Home{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
+    <h1>Bem-vindo, {{ usuario.nome }}!</h1>
+    <p>Escolha uma das seções abaixo para navegar:</p>
 
-    <!-- Gráficos -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card {% if current_user.tema_escuro %}bg-dark text-white{% endif %}">
-                <div class="card-header">Quantidade de Produtos</div>
-                <div class="card-body">
-                    <canvas id="quantidadeChart" height="150"></canvas>
-                </div>
-            </div>
+    <div class="guias-container">
+        <!-- Produtos -->
+        <div class="guia">
+            <h3>Produtos</h3>
+            <p>Confira todos os produtos disponíveis em estoque.</p>
+            <a href="{{ url_for('routes.produtos') }}" class="btn">Acessar</a>
         </div>
-        <div class="col-md-6">
-            <div class="card {% if current_user.tema_escuro %}bg-dark text-white{% endif %}">
-                <div class="card-header">Valor Total por Produto</div>
-                <div class="card-body">
-                    <canvas id="valorChart" height="150"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Mensagens de feedback -->
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-info alert-dismissible fade show {% if current_user.tema_escuro %}bg-secondary text-white{% endif %}" role="alert">
-                    <i class="bi bi-info-circle me-2"></i>{{ message }}
-                    <button type="button" class="btn-close {% if current_user.tema_escuro %}btn-close-white{% endif %}" data-bs-dismiss="alert" aria-label="Fechar"></button>
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+        <!-- Histórico -->
+        <div class="guia">
+            <h3>Histórico</h3>
+            <p>Veja o histórico de operações e movimentações realizadas.</p>
+            <a href="{{ url_for('routes.historico') }}" class="btn">Acessar</a>
+        </div>
 
-    <!-- Adicionar Produto -->
-    <div class="card mb-4 {% if current_user.tema_escuro %}bg-dark text-white{% endif %}">
-        <div class="card-header">Adicionar Produto</div>
-        <div class="card-body">
-            <form action="{{ url_for('routes.adicionar_produto') }}" method="post" class="row g-3 align-items-end">
-                <div class="col-12 col-md-4">
-                    <input type="text" name="nome" 
-                           class="form-control {% if current_user.tema_escuro %}bg-secondary text-white border-0{% endif %}" 
-                           placeholder="Nome do Produto" required>
-                </div>
-                <div class="col-6 col-md-3">
-                    <input type="number" name="quantidade" 
-                           class="form-control {% if current_user.tema_escuro %}bg-secondary text-white border-0{% endif %}" 
-                           placeholder="Quantidade" min="1" required>
-                </div>
-                <div class="col-6 col-md-3">
-                    <input type="number" step="0.01" name="preco" 
-                           class="form-control {% if current_user.tema_escuro %}bg-secondary text-white border-0{% endif %}" 
-                           placeholder="Preço" min="0" required>
-                </div>
-                <div class="col-12 col-md-2">
-                    <button type="submit" class="btn {% if current_user.tema_escuro %}btn-light text-dark{% else %}btn-primary{% endif %} w-100">
-                        <i class="bi bi-plus-circle"></i> Adicionar
-                    </button>
-                </div>
-            </form>
+        <!-- Relatórios -->
+        <div class="guia">
+            <h3>Relatórios</h3>
+            <p>Consulte os relatórios completos do sistema.</p>
+            <a href="{{ url_for('routes.relatorio') }}" class="btn">Acessar</a>
         </div>
-    </div>
-
-    <!-- Lista de Produtos -->
-    <div class="card {% if current_user.tema_escuro %}bg-dark text-white{% endif %}">
-        <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
-            <span>Produtos Cadastrados</span>
-            <span class="badge bg-primary">Total: {{ produtos|length }}</span>
-            <span class="badge bg-success">
-                Valor Total Estoque: R$ {{ '%.2f'|format(valor_total_estoque) }}
-            </span>
-        </div>
-        <div class="table-responsive">
-            <table class="table table-striped {% if current_user.tema_escuro %}table-dark{% endif %} mb-0">
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Quantidade</th>
-                        <th>Preço</th>
-                        <th>Valor Total</th>
-                        <th class="text-end">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for produto in produtos %}
-                        {% set valor_total = produto.quantidade * produto.preco %}
-                        <tr>
-                            <td>{{ produto.nome }}</td>
-                            <td>{{ produto.quantidade }}</td>
-                            <td>R$ {{ produto.preco }}</td>
-                            <td>R$ {{ '%.2f'|format(valor_total) }}</td>
-                            <td class="text-end">
-                                <div class="d-flex gap-2 justify-content-end">
-                                    <form action="{{ url_for('routes.atualizar_produto', id=produto.id) }}" method="POST" class="d-flex">
-                                        <input type="number" name="quantidade" 
-                                               class="form-control form-control-sm me-2 {% if current_user.tema_escuro %}bg-secondary text-white border-0{% endif %}" 
-                                               value="{{ produto.quantidade }}" min="1" required>
-                                        <input type="text" name="motivo" 
-                                               class="form-control form-control-sm me-2 {% if current_user.tema_escuro %}bg-secondary text-white border-0{% endif %}" 
-                                               placeholder="Motivo" required>
-                                        <button type="submit" class="btn btn-sm {% if current_user.tema_escuro %}btn-light text-dark{% else %}btn-warning{% endif %}">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </button>
-                                    </form>
-                                    <a href="{{ url_for('routes.remover_produto', id=produto.id) }}" 
-                                       class="btn btn-sm {% if current_user.tema_escuro %}btn-light text-dark{% else %}btn-danger{% endif %}">
-                                        <i class="bi bi-trash"></i>
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                    {% else %}
-                        <tr>
-                            <td colspan="5" class="text-center text-muted">Nenhum produto cadastrado.</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% if produtos %}
-            <div class="card-footer text-end">
-                Valor Total do Estoque: R$ {{ '%.2f'|format(valor_total_estoque) }}
-            </div>
-        {% endif %}
     </div>
 </div>
 
-<!-- Bootstrap & Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-
-<script>
-    // Ativa tooltips
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.map(function (el) { return new bootstrap.Tooltip(el); });
-
-    // Gráficos
-    var estoqueLabels = {{ estoque_labels|tojson|safe }};
-    var estoqueQuantidades = {{ estoque_quantidades|tojson|safe }};
-    var estoqueValores = {{ estoque_valores|tojson|safe }};
-
-    var ctxQtd = document.getElementById('quantidadeChart').getContext('2d');
-    var ctxVal = document.getElementById('valorChart').getContext('2d');
-
-    var darkMode = {{ 'true' if current_user.tema_escuro else 'false' }};
-
-    // Função para cores do gráfico
-    function getChartColors(dark) {
-        return {
-            bgQtd: dark ? 'rgba(0,123,255,0.7)' : 'rgba(0,123,255,0.5)',
-            bgVal: dark ? 'rgba(25,135,84,0.7)' : 'rgba(25,135,84,0.5)',
-            borderQtd: 'rgba(0,123,255,1)',
-            borderVal: 'rgba(25,135,84,1)',
-            fontColor: dark ? '#fff' : '#000'
-        };
+<style>
+    .guias-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-top: 30px;
     }
-
-    var colors = getChartColors(darkMode);
-
-    if (estoqueLabels.length > 0) {
-        // Quantidade
-        new Chart(ctxQtd, {
-            type: 'bar',
-            data: {
-                labels: estoqueLabels,
-                datasets: [{
-                    label: 'Quantidade',
-                    data: estoqueQuantidades,
-                    backgroundColor: colors.bgQtd,
-                    borderColor: colors.borderQtd,
-                    borderWidth: 1,
-                    borderRadius: 5
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { labels: { color: colors.fontColor } },
-                    title: { display: true, text: 'Quantidade de Produtos', color: colors.fontColor }
-                },
-                scales: {
-                    x: { ticks: { color: colors.fontColor }, grid: { color: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' } },
-                    y: { ticks: { color: colors.fontColor }, beginAtZero: true, grid: { color: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' } }
-                }
-            }
-        });
-
-        // Valor Total
-        new Chart(ctxVal, {
-            type: 'bar',
-            data: {
-                labels: estoqueLabels,
-                datasets: [{
-                    label: 'Valor Total (R$)',
-                    data: estoqueValores,
-                    backgroundColor: colors.bgVal,
-                    borderColor: colors.borderVal,
-                    borderWidth: 1,
-                    borderRadius: 5
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { labels: { color: colors.fontColor } },
-                    title: { display: true, text: 'Valor Total por Produto', color: colors.fontColor }
-                },
-                scales: {
-                    x: { ticks: { color: colors.fontColor }, grid: { color: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' } },
-                    y: { ticks: { color: colors.fontColor }, beginAtZero: true, grid: { color: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' } }
-                }
-            }
-        });
+    .guia {
+        flex: 1 1 250px;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        text-align: center;
+        background-color: {% if usuario.tema_escuro %}#1a1a1a{% else %}#fff{% endif %};
+        color: {% if usuario.tema_escuro %}#fff{% else %}#000{% endif %};
+        transition: transform 0.2s, box-shadow 0.2s;
     }
-</script>
+    .guia:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    .btn {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: background-color 0.2s;
+    }
+    .btn:hover {
+        background-color: #0056b3;
+    }
+</style>
 {% endblock %}
