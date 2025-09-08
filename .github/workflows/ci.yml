@@ -9,9 +9,8 @@ on:
       - main
 
 jobs:
-  deploy:
+  build-and-test:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -21,12 +20,25 @@ jobs:
         with:
           python-version: '3.13'
 
-      - name: Install dependencies (for validation)
+      - name: Install dependencies
         run: |
           python -m venv venv
           source venv/bin/activate
           pip install --upgrade pip
           pip install -r requirements.txt
+
+      - name: Run tests
+        run: |
+          source venv/bin/activate
+          # Executa todos os testes com pytest
+          pytest --maxfail=1 --disable-warnings -q
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Deploy to server via SSH
         uses: appleboy/ssh-action@v0.1.8
@@ -36,7 +48,6 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
           script: |
-            # Caminho do projeto no servidor
             PROJECT_DIR="/home/logistiq/LogistiQ"
             VENV_DIR="$PROJECT_DIR/venv"
 
