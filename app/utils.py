@@ -30,23 +30,7 @@ def registrar_atividade(usuario, descricao):
 
 def listar_atividades(usuario):
     return Atividade.query.filter_by(usuario_id=usuario.id).order_by(Atividade.data.desc()).all()
-
-# ------------------------
-# DECORATOR DE ROLES
-# ------------------------
-def role_required(*roles):
-    """Decorator para restringir acesso baseado em roles"""
-    def decorator(f):
-        @wraps(f)
-        def decorated_function(*args, **kwargs):
-            if not current_user.is_authenticated:
-                abort(401)  # Usuário não logado
-            if current_user.role not in roles:
-                abort(403)  # Acesso negado
-            return f(*args, **kwargs)
-        return decorated_function
-    return decorator    
-
+    
 # ------------------------
 # TOKEN DE REDEFINIÇÃO DE SENHA
 # ------------------------
@@ -56,7 +40,7 @@ def generate_reset_token(user_id, expires_sec=1800):
     """
     payload = {
         'user_id': user_id,
-        'exp': datetime.utcnow() + timedelta(seconds=expires_sec)
+        'exp': datetime.now(timezone.utc) + timedelta(seconds=expires_sec)
     }
     token = jwt.encode(payload, str(current_app.config['JWT_SECRET_KEY']), algorithm='HS256')
     return token

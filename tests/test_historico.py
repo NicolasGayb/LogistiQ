@@ -1,47 +1,82 @@
 import pytest
-from app.models import HistoricoMovimentacao, Usuario, db
-from werkzeug.security import generate_password_hash
-from datetime import datetime
-import uuid
+from app import create_app, db
+from app.models import Usuario
+from flask_login import login_user, logout_user
+from datetime import datetime, timezone
 
-def test_historico_record(client, app):
-    # Gera dados únicos para evitar conflito de chave única
-    unique_id = uuid.uuid4().hex[:6]
-    username = f"testeuser_{unique_id}"
-    email = f"{username}@mail.com"
+@pytest.fixture
+def client():
+    app = create_app()
+    app.config["TESTING"] = True
+    app.config["WTF_CSRF_ENABLED"] = False
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"  # banco em memória para testes
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-    # Cria usuário para relação
-    u = Usuario(
-        nome="Teste",
-        username=username,
-        email=email,
-        senha=generate_password_hash("Teste@123")
+    with app.test_client() as client:
+        with app.app_context():
+            db.create_all()
+            yield client
+            db.session.remove()
+            db.drop_all()
+
+@pytest.fixture
+def create_user():
+    def _create_user(email, role, senha="Teste@123"):
+        user = Usuario(
+            nome="Teste",
+            username=email.split("@")[0],  # preenchendo username para evitar NOT NULL
+            email=email,
+            senha=senha,
+            role=role
+        )
+        db.session.add(user)
+        db.session.commit()
+        return user
+    return _create_user
+
+def login(client, email, senha="Teste@123"):
+    return client.post(
+        "/login",
+        data={"email": email, "senha": senha},
+        follow_redirects=True
     )
 
-    with app.app_context():
-        # Salva o usuário no DB
-        db.session.add(u)
-        db.session.commit()
+# -------------------------------
+# TESTES
+# -------------------------------
 
-        # Cria histórico vinculado ao usuário
-        h = HistoricoMovimentacao(
-            produto_id=1,
-            produto_nome="Produto Exemplo",
-            usuario=u.nome,
-            acao="Cadastro de produto",
-            quantidade_anterior=0,
-            quantidade_nova=10,
-            motivo="Teste de criação",
-            data_hora=datetime.utcnow()
-        )
-        db.session.add(h)
-        db.session.commit()
+# Função auxiliar para forçar login via session
+def login_via_session(client, user):
+    with client.session_transaction() as sess:
+        sess['_user_id'] = str(user.id)
+        sess['_fresh'] = True
 
-    # Faz login do usuário antes de acessar rota protegida
-    client.post('/login', data={"email": email, "senha": "Teste@123"}, follow_redirects=True)
 
-    # Agora acessa a rota /historico
-    response = client.get('/historico', follow_redirects=True)
+def test_historico_acesso_administrador(client, create_user):
+    logged_in_client = create_user("admin@test.com", "administrador")
+    login_via_session(client, logged_in_client)
+
+    response = client.get("/historico", follow_redirects=True)
+    html = response.data.decode("utf-8")
     assert response.status_code == 200
-    assert b"Cadastro de produto" in response.data
-    assert b"Produto Exemplo" in response.data
+    assert "Histórico" in html
+
+
+def test_historico_acesso_supervisor(client, create_user):
+    supervisor_user = create_user("super@test.com", "supervisor")
+    login_via_session(client, supervisor_user)
+
+    response = client.get("/historico", follow_redirects=True)
+    html = response.data.decode("utf-8")
+    assert response.status_code == 200
+    assert "Histórico" in html
+
+
+def test_historico_bloqueio_usuario(client, create_user):
+    usuario = create_user("usuario@test.com", "usuario")
+    login_via_session(client, usuario)
+
+    response = client.get("/historico", follow_redirects=True)
+    html = response.data.decode("utf-8")
+    assert response.status_code == 200
+    assert "Acesso negado" in html

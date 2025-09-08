@@ -7,6 +7,8 @@
     <div class="row justify-content-center">
         <div class="col-lg-10">
             <div class="card shadow-lg border-0 rounded-3">
+
+                <!-- Cabeçalho -->
                 <div class="card-header d-flex justify-content-between align-items-center {% if current_user.tema_escuro %}bg-dark text-white{% else %}bg-dark text-white{% endif %}">
                     <h5 class="mb-0"><i class="bi bi-clock-history"></i> Histórico de Movimentações</h5>
                     <span class="badge bg-secondary">{{ pagination.total }} registros</span>
@@ -35,6 +37,7 @@
                     </div>
                 </div>
 
+                <!-- Tabela de histórico -->
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table table-hover table-striped mb-0 align-middle {% if current_user.tema_escuro %}table-dark{% endif %}">
@@ -56,13 +59,9 @@
                                     <td>{{ h.produto_nome or '-' }}</td>
                                     <td>{{ h.usuario }}</td>
                                     <td>
-                                        {% if h.acao == "Entrada" %}
-                                            <span class="badge {% if current_user.tema_escuro %}bg-success{% else %}bg-success{% endif %}">
-                                                <i class="bi bi-arrow-down-circle"></i> {{ h.acao }}
-                                            </span>
-                                        {% elif h.acao == "Saída" %}
-                                            <span class="badge {% if current_user.tema_escuro %}bg-danger{% else %}bg-danger{% endif %}">
-                                                <i class="bi bi-arrow-up-circle"></i> {{ h.acao }}
+                                        {% if h.acao in ["Entrada", "Saída"] %}
+                                            <span class="badge {% if h.acao == 'Entrada' %}bg-success{% else %}bg-danger{% endif %}">
+                                                {{ h.acao }}
                                             </span>
                                         {% else %}
                                             <span class="badge bg-secondary">{{ h.acao }}</span>

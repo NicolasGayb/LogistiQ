@@ -1,11 +1,11 @@
 from . import db, login_manager
 from flask_login import UserMixin
-from datetime import datetime
+from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash
 
 @login_manager.user_loader
 def load_user(user_id):
-    return Usuario.query.get(int(user_id))
+    return db.session.get(Usuario, int(user_id))
 
 # Modelo de usuário
 class Usuario(db.Model, UserMixin):
@@ -17,7 +17,7 @@ class Usuario(db.Model, UserMixin):
     username = db.Column(db.String(150), unique=True, nullable=False)
     email = db.Column(db.String(150), unique=True, nullable=False)
     senha = db.Column(db.String(200), nullable=False)
-    data_cadastro = db.Column(db.DateTime, default=datetime.utcnow)
+    data_cadastro = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     tema_escuro = db.Column(db.Boolean, default=False)  # Preferência de tema
     notificacoes = db.Column(db.Boolean, default=True)  # Preferência de notificações
     
@@ -57,7 +57,7 @@ class HistoricoMovimentacao(db.Model):
     quantidade_anterior = db.Column(db.Integer, nullable=True)
     quantidade_nova = db.Column(db.Integer, nullable=True)
     motivo = db.Column(db.String(200), nullable=True)
-    data_hora = db.Column(db.DateTime, default=datetime.utcnow)
+    data_hora = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
 # Modelo de Atividades
 class Atividade(db.Model):
@@ -66,7 +66,7 @@ class Atividade(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
     descricao = db.Column(db.String(255), nullable=False)
-    data = db.Column(db.DateTime, default=datetime.utcnow)
+    data = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     usuario = db.relationship('Usuario', backref=db.backref('atividades', lazy=True))
 

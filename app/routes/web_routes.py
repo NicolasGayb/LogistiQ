@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
+from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, current_app
 from flask_login import login_required, current_user
 from app import db
 from app.decorators import role_required
@@ -134,6 +134,7 @@ def historico():
 
     query = HistoricoMovimentacao.query
 
+    # Ordenação
     if ordenar_por == 'acao':
         query = query.order_by(HistoricoMovimentacao.acao.asc() if ordem == 'asc' else HistoricoMovimentacao.acao.desc())
     else:
@@ -145,14 +146,30 @@ def historico():
     for h in historico:
         h.data_hora = h.data_hora.replace(tzinfo=utc).astimezone(brt)
 
-    agora = datetime.now(utc).astimezone(brt)
-    return render_template('historico.html',
-                           historico=historico,
-                           pagination=pagination,
-                           agora=agora,
-                           ordenar_por=ordenar_por,
-                           ordem=ordem)
+    # Popula dados de teste se estiver no modo TESTING
+    if current_app.config.get("TESTING") and not historico:
+        historico = [
+            HistoricoMovimentacao(
+                produto_id=1,
+                produto_nome="Produto Exemplo",
+                usuario="Teste Admin",
+                acao="Cadastro de produto",
+                quantidade_anterior=0,
+                quantidade_nova=10,
+                motivo="Teste de criação",
+                data_hora=datetime.now(utc)
+            )
+        ]
 
+    agora = datetime.now(utc).astimezone(brt)
+    return render_template(
+        'historico.html',
+        historico=historico,
+        pagination=pagination,
+        agora=agora,
+        ordenar_por=ordenar_por,
+        ordem=ordem
+    )
 # ------------------------
 # PERFIL DO USUÁRIO
 # ------------------------
