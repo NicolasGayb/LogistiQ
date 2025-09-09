@@ -27,15 +27,22 @@ jobs:
           source venv/bin/activate
           pip install --upgrade pip
           pip install -r requirements.txt
+          pip install pytest pytest-cov
 
-      - name: Run tests
+      - name: Run tests with coverage
         run: |
           source venv/bin/activate
-          pytest --maxfail=1 --disable-warnings -q
+          pytest --maxfail=1 --disable-warnings --cov=app --cov-report=term-missing
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: .coverage
 
   deploy:
     runs-on: ubuntu-latest
-    needs: test   # só roda se os testes passarem
+    needs: test
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
@@ -62,7 +69,6 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
           script: |
-            # Caminho do projeto no servidor
             PROJECT_DIR="/home/logistiq/LogistiQ"
             VENV_DIR="$PROJECT_DIR/venv"
 

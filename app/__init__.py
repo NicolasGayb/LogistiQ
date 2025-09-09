@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import os
 import secrets
 
-# Instancia as extensões
+# Instância das extensões
 db = SQLAlchemy()
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
@@ -17,42 +17,40 @@ load_dotenv()
 
 def create_app(test_config=None):
     app = Flask(__name__)
+
+    # Config padrão
     secret_key = os.environ.get("SECRET_KEY") or secrets.token_hex(32)
-    app.secret_key = secret_key
+    app.config.from_mapping(
+        SECRET_KEY=secret_key,
+        SQLALCHEMY_DATABASE_URI=os.getenv("DATABASE_URL", "sqlite:///logistiq.db"),
+        SQLALCHEMY_TRACK_MODIFICATIONS=False,
+        JWT_SECRET_KEY=os.getenv('JWT_SECRET_KEY'),
+        MAIL_USERNAME=os.environ.get('MAIL_USERNAME'),
+        MAIL_PASSWORD=os.environ.get('MAIL_PASSWORD'),
+        MAIL_SERVER=os.environ.get('MAIL_SERVER'),
+        MAIL_PORT=int(os.environ.get('MAIL_PORT', 587)),
+        MAIL_USE_TLS=os.environ.get('MAIL_USE_TLS', 'True') == 'True',
+        MAIL_DEFAULT_SENDER=os.environ.get('MAIL_DEFAULT_SENDER')
+    )
 
+    # Sobrescreve config para testes
     if test_config:
-        # Configuração especial para testes
         app.config.update(test_config)
-    else:
-        # Configuração padrão (produção/desenvolvimento)
-        app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
-        app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-        
-        # Configuração do e-mail
-        app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
-        app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
-        app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER')
-        app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT', 587))
-        app.config['MAIL_USE_TLS'] = os.environ.get('MAIL_USE_TLS', 'True') == 'True'
-        app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER')
-        
-        # Configuração JWT
-        app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
 
-    # Inicializa as extensões
+    # Inicializa extensões após config final
     db.init_app(app)
     login_manager.init_app(app)
     migrate.init_app(app, db)
     mail.init_app(app)
 
-    # Importa modelo de usuário para o carregamento de sessões
+    # Modelo de usuário
     from app.models import Usuario
 
     @login_manager.user_loader
     def load_user(user_id):
         return db.session.get(Usuario, int(user_id))
 
-    # Registra os blueprints de rotas
+    # Registra blueprints
     from app.routes.web_routes import routes as routes_blueprint
     from app.routes.auth_routes import auth as auth_blueprint
     from app.routes.api_routes import api as api_blueprint
