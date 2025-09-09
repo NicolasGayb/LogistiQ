@@ -8,8 +8,7 @@ from unittest.mock import patch
 @pytest.fixture
 def app():
     """Cria uma instância da aplicação configurada para testes"""
-    app = create_app()
-    app.config.update({
+    app = create_app({
         'TESTING': True,
         'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:',
         'SQLALCHEMY_TRACK_MODIFICATIONS': False,
