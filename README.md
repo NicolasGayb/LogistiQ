@@ -73,7 +73,6 @@ LogistiQ/
 │   ├── models.py
 │   └── __init__.py
 │── run.py
-│── wsgi.py
 │── requirements.txt
 │── README.md
 │── CONTRIBUTING.md
