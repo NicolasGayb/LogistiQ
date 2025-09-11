@@ -1,4 +1,4 @@
-# 🧮 ControleEstoqueV2 · ![Python](https://img.shields.io/badge/Python-3.10-blue) ![Flask](https://img.shields.io/badge/Flask-2.3-lightgrey) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue) ![License](https://img.shields.io/badge/License-MIT-green)
+# 🧮 LogistiQ · ![Python](https://img.shields.io/badge/Python-3.10-blue) ![Flask](https://img.shields.io/badge/Flask-2.3-lightgrey) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue) ![License](https://img.shields.io/badge/License-MIT-green)
 
 Sistema web simples para controle de estoque, desenvolvido com Python e Flask. Ideal para pequenos negócios ou como projeto de aprendizado.  
 Agora com suporte a **PostgreSQL** para uso em produção e hospedagem em plataformas como **Railway** ou **Render**.
