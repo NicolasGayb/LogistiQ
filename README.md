@@ -47,12 +47,12 @@ Agora com suporte a **PostgreSQL** para produção, hospedagem própria no **Dig
 
 ## 🛠 Tecnologias Utilizadas
 
-* ![Python](https://img.shields.io/badge/Python-3.10-blue) [Python 3](https://www.python.org/)
-* ![Flask](https://img.shields.io/badge/Flask-2.3-lightgrey) [Flask](https://flask.palletsprojects.com/)
+* [Python 3](https://www.python.org/)
+* [Flask](https://flask.palletsprojects.com/)
 * [Flask-Login](https://flask-login.readthedocs.io/)
 * [Flask-SQLAlchemy](https://flask-sqlalchemy.palletsprojects.com/)
 * [SQLite](https://www.sqlite.org/index.html) (desenvolvimento local)
-* ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue) [PostgreSQL](https://www.postgresql.org/) (produção)
+* [PostgreSQL](https://www.postgresql.org/) (produção)
 * [Bootstrap 5](https://getbootstrap.com/)
 * [Chart.js](https://www.chartjs.org/)
 * ![License](https://img.shields.io/badge/License-MIT-green) MIT License
@@ -205,4 +205,3 @@ Veja o arquivo `requirements.txt` para as bibliotecas necessárias.
 * **Nicolas Gabriel Rodrigues Leal**
 * Email: [nicolasgbleal@gmail.com](mailto:nicolasgbleal@gmail.com)
 * GitHub: [@NicolasGayb](https://github.com/NicolasGayb)
-
