@@ -55,7 +55,7 @@ Agora com suporte a **PostgreSQL** para produção, hospedagem própria no **Dig
 * [PostgreSQL](https://www.postgresql.org/) (produção)
 * [Bootstrap 5](https://getbootstrap.com/)
 * [Chart.js](https://www.chartjs.org/)
-* ![License](https://img.shields.io/badge/License-MIT-green) MIT License
+* ![License](https://img.shields.io/badge/License-MIT-green)
 
 ---
 
