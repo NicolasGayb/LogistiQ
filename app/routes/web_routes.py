@@ -13,9 +13,18 @@ utc = pytz.utc
 brt = pytz.timezone('America/Sao_Paulo')
 
 # ------------------------
-# ROTA PRINCIPAL - ESTOQUE
+# HOME PUBLICA
 # ------------------------
 @routes.route('/')
+def home():
+    if current_user.is_authenticated:
+        return redirect(url_for('routes.index'))
+    return render_template('home.html')
+
+# ------------------------
+# INDEX - USUÁRIO LOGADO
+# ------------------------
+@routes.route('/index')
 @login_required
 def index():
     return render_template('index.html', usuario=current_user)
