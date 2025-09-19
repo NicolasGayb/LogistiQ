@@ -1,0 +1,64 @@
+{% extends "navbar.html" %}
+
+{% block title %}Criar Usuário{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Criar Usuário</h2>
+    <a href="{{ url_for('admin.usuarios') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar
+    </a>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, msg in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        {{ msg }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<form method="post">
+    <div class="mb-3">
+        <label for="nome" class="form-label">Nome</label>
+        <input type="text" class="form-control" id="nome" name="nome" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" class="form-control" id="username" name="username" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" class="form-control" id="email" name="email" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="senha" class="form-label">Senha</label>
+        <input type="password" class="form-control" id="senha" name="senha" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="role" class="form-label">Role</label>
+        <select class="form-select" id="role" name="role" required>
+            <option value="administrador">Administrador</option>
+            <option value="supervisor">Supervisor</option>
+            <option value="usuario">Usuário</option>
+            <option value="convidado">Convidado</option>
+        </select>
+    </div>
+
+    <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" value="1" id="ativo" name="ativo" checked>
+        <label class="form-check-label" for="ativo">
+            Ativo
+        </label>
+    </div>
+
+    <button type="submit" class="btn btn-success"><i class="bi bi-plus-circle"></i> Criar Usuário</button>
+</form>
+{% endblock %}

@@ -54,9 +54,11 @@ def create_app(test_config=None):
     from app.routes.web_routes import routes as routes_blueprint
     from app.routes.auth_routes import auth as auth_blueprint
     from app.routes.api_routes import api as api_blueprint
+    from app.routes.admin_routes import admin_bp as admin_blueprint
 
     app.register_blueprint(routes_blueprint)
     app.register_blueprint(auth_blueprint)
     app.register_blueprint(api_blueprint, url_prefix="/api")
+    app.register_blueprint(admin_blueprint, url_prefix="/admin")
 
     return app
