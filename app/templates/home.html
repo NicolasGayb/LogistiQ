@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogistiQ - Gestão de Estoque Simplificada</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Reset e fontes */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', sans-serif; }
+        body { background-color: #f7f9f7; color: #333; scroll-behavior: smooth; }
+
+        /* HEADER */
+        header {
+            background-color: #2e7d32; 
+            color: white; 
+            padding: 20px 0; 
+            position: fixed; width: 100%; top: 0; z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        header .container { width: 90%; max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { font-size: 2rem; }
+        nav a { color: white; text-decoration: none; margin-left: 20px; font-weight: 500; transition: 0.3s; }
+        nav a:hover { color: #a5d6a7; }
+
+        /* HERO */
+        .hero {
+            background: linear-gradient(90deg, #a5d6a7, #81c784);
+            color: #1b5e20;
+            text-align: center;
+            padding: 150px 20px 100px;
+        }
+        .hero h2 { font-size: 3rem; margin-bottom: 20px; }
+        .hero p { font-size: 1.3rem; margin-bottom: 30px; line-height: 1.6; }
+        .hero a { background-color: #2e7d32; color: white; padding: 15px 35px; text-decoration: none; font-weight: bold; border-radius: 50px; transition: 0.3s; }
+        .hero a:hover { background-color: #1b5e20; }
+
+        /* FEATURES */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            width: 90%;
+            max-width: 1200px;
+            margin: 50px auto;
+        }
+        .feature-card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        .feature-card h3 { color: #2e7d32; margin-bottom: 15px; }
+        .feature-card p { line-height: 1.5; }
+
+        /* CTA SECTION */
+        .cta {
+            background-color: #2e7d32;
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+        }
+        .cta h2 { font-size: 2.5rem; margin-bottom: 20px; }
+        .cta a { background-color: #a5d6a7; color: #1b5e20; padding: 15px 35px; font-weight: bold; border-radius: 50px; text-decoration: none; transition: 0.3s; }
+        .cta a:hover { background-color: #81c784; }
+
+        /* FOOTER */
+        footer { background-color: #1b5e20; color: white; text-align: center; padding: 20px 0; margin-top: 50px; }
+
+        /* RESPONSIVO */
+        @media(max-width:768px){
+            .hero h2 { font-size: 2.2rem; }
+            .cta h2 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="container">
+            <h1>LogistiQ</h1>
+            <nav>
+                <a href="{{ url_for('auth.login') }}">Login</a>
+                <a href="{{ url_for('auth.registro') }}">Cadastro</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <h2>Gestão de Estoque Simplificada</h2>
+        <p>O LogistiQ ajuda sua empresa a controlar produtos, acompanhar histórico de movimentações e gerar relatórios detalhados de forma rápida e segura.</p>
+        <a href="{{ url_for('auth.login') }}">Comece Agora</a>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="features">
+        <div class="feature-card">
+            <h3>Controle de Produtos</h3>
+            <p>Adicione, atualize e remova produtos do seu estoque de forma prática e intuitiva.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Histórico Detalhado</h3>
+            <p>Registre todas as movimentações e visualize facilmente o que mudou em seu estoque.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Relatórios Inteligentes</h3>
+            <p>Tenha uma visão clara do valor total do estoque, gráficos e insights para decisões rápidas.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Segurança e Perfis</h3>
+            <p>Gerencie acessos com diferentes perfis e mantenha seus dados sempre protegidos.</p>
+        </div>
+    </section>
+
+    <!-- CALL TO ACTION -->
+    <section class="cta">
+        <h2>Pronto para otimizar seu estoque?</h2>
+        <a href="{{ url_for('auth.registro') }}">Crie sua conta agora</a>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>&copy; {{ current_year }} LogistiQ. Todos os direitos reservados.</p>
+    </footer>
+
+    <!-- JS para scroll suave -->
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e){
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+
+</body>
+</html>
