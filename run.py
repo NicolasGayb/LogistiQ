@@ -1,5 +1,20 @@
 import os
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
 from app import create_app, db
+from flask import Flask
+from dotenv import load_dotenv
+
+# Carrega variáveis de ambiente do arquivo .env
+load_dotenv()
+
+# Inicializa o Sentry para monitoramento de erros
+sentry_sdk.init(
+    dsn=os.getenv("SENTRY_DSN"),
+    integrations=[FlaskIntegration()],
+    traces_sample_rate=1.0,
+    send_default_pii=True
+)
 
 # Cria a aplicação
 app = create_app()
