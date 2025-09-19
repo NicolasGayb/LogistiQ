@@ -16,11 +16,20 @@ class Usuario(db.Model, UserMixin):
     nome = db.Column(db.String(150), nullable=False)
     username = db.Column(db.String(150), unique=True, nullable=False)
     email = db.Column(db.String(150), unique=True, nullable=False)
-    senha = db.Column(db.String(200), nullable=False)
-    data_cadastro = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    senha = db.Column(db.String(200), nullable=False) 
+    data_cadastro = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc)) # Data de cadastro do usuário
     tema_escuro = db.Column(db.Boolean, default=False)  # Preferência de tema
     notificacoes = db.Column(db.Boolean, default=True)  # Preferência de notificações
+    ativo = db.Column(db.Boolean, default=True)  # Status da conta
+    ultimo_login = db.Column(db.DateTime, nullable=True)  # Último login do usuário
+    telefone = db.Column(db.String(20), nullable=True)  # Telefone do usuário
+    endereco = db.Column(db.String(200), nullable=True)  # Endereço do usuário
+    cargo = db.Column(db.String(100), nullable=True)  # Cargo do usuário na empresa
+    data_inativacao = db.Column(db.DateTime, nullable=True)  # Data de inativação da conta
+    observacoes = db.Column(db.Text, nullable=True)  # Observações adicionais
+    avatar = db.Column(db.String(300), nullable=True)  # URL do avatar do usuário
     
+
     # Papel do usuário no sistema
     role = db.Column(db.String(20), nullable=False, default='usuario')  # valores: 'admin', 'usuario', 'supervisor', 'convidado'
 

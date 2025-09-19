@@ -1,0 +1,97 @@
+{% extends "navbar.html" %}
+
+{% block title %}Usuários{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Usuários</h2>
+    <a href="{{ url_for('admin.criar_usuario') }}" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Criar Usuário
+    </a>
+</div>
+
+<!-- ===================== Flash messages ===================== -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, msg in messages %}
+      <div class="alert alert-{{ 'success' if category=='success' else 'danger' }} alert-dismissible fade show" role="alert">
+        {{ msg }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<!-- ===================== Filtros ===================== -->
+<form method="get" class="row g-3 mb-4">
+    <div class="col-md-4">
+        <input type="text" name="nome_email" value="{{ request.args.get('nome_email','') }}" class="form-control" placeholder="Pesquisar por nome ou email">
+    </div>
+    <div class="col-md-3">
+        <select name="tipo" class="form-select">
+            <option value="">Todos os tipos</option>
+            <option value="administrador" {% if request.args.get('tipo') == 'administrador' %}selected{% endif %}>Administrador</option>
+            <option value="supervisor" {% if request.args.get('tipo') == 'supervisor' %}selected{% endif %}>Supervisor</option>
+            <option value="usuario" {% if request.args.get('tipo') == 'usuario' %}selected{% endif %}>Usuário</option>
+            <option value="convidado" {% if request.args.get('tipo') == 'convidado' %}selected{% endif %}>Convidado</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select name="ativo" class="form-select">
+            <option value="">Todos os status</option>
+            <option value="ativo" {% if request.args.get('ativo') == 'ativo' %}selected{% endif %}>Ativo</option>
+            <option value="inativo" {% if request.args.get('ativo') == 'inativo' %}selected{% endif %}>Inativo</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100"><i class="bi bi-funnel-fill"></i> Filtrar</button>
+    </div>
+</form>
+
+<!-- ===================== Tabela ===================== -->
+<div class="table-responsive">
+<table class="table table-striped table-hover align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Tipo</th>
+            <th>Status</th>
+            <th>Data Cadastro</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for u in usuarios.items %}
+        <tr>
+            <td>{{ u.nome }}</td>
+            <td>{{ u.email }}</td>
+            <td>{{ u.role|capitalize }}</td>
+            <td>{{ 'Ativo' if u.ativo else 'Inativo' }}</td>
+            <td>{{ u.data_cadastro_ajustada.strftime('%d/%m/%Y %H:%M') if u.data_cadastro_ajustada else '-' }}</td>
+            <td>
+                <a href="{{ url_for('admin.editar_usuario', id=u.id) }}" class="btn btn-warning btn-sm">
+                    <i class="bi bi-pencil-square"></i> Editar
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+
+<!-- ===================== Paginação ===================== -->
+<nav aria-label="Navegação de páginas">
+  <ul class="pagination justify-content-center">
+    {% for p in usuarios.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+      {% if p %}
+        <li class="page-item {% if usuarios.page == p %}active{% endif %}">
+          <a class="page-link" href="{{ url_for('admin.usuarios', page=p, nome_email=request.args.get('nome_email'), tipo=request.args.get('tipo'), ativo=request.args.get('ativo')) }}">{{ p }}</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">…</span></li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+</nav>
+{% endblock %}
