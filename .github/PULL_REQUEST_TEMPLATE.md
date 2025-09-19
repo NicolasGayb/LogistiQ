@@ -2,8 +2,7 @@
 name: "🔀 Pull Request"
 about: Submeta uma nova funcionalidade, correção de bug ou melhoria
 title: "[PR] "
-labels: []
-assignees: NicolasGayb
+assignees: 
 ---
 
 ## 📌 Descrição

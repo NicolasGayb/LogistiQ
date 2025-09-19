@@ -1,5 +1,5 @@
 # Rotas de autenticação de usuários (login, logout, registro)
-
+from app.forms import RequestResetForm, ResetPasswordForm
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -94,3 +94,36 @@ def registro():
         return redirect(url_for('auth.login'))
 
     return render_template('registro.html')
+
+# ------------------------
+# RECUPERAÇÃO DE SENHA
+# ------------------------
+@auth.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    form = RequestResetForm()
+    if form.validate_on_submit():
+        user = Usuario.query.filter_by(email=form.email.data).first()
+        if user:
+            token = generate_reset_token(user.id)
+            send_reset_email(user, token)
+        flash('Se o email estiver cadastrado, você receberá instruções para redefinir a senha.', 'info')
+        return redirect(url_for('auth.login'))
+    return render_template('forgot_password.html', form=form)
+
+@auth.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    user_id = verify_reset_token(token)
+    if not user_id:
+        flash('O link é inválido ou expirou.', 'warning')
+        return redirect(url_for('auth.forgot_password'))
+
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        user = Usuario.query.get(user_id)
+        user.set_password(form.password.data)
+        db.session.commit()
+
+        flash('Senha redefinida com sucesso! Faça login.', 'success')
+        return redirect(url_for('auth.login'))
+
+    return render_template('reset_password.html', form=form)

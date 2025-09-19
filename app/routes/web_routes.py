@@ -268,36 +268,3 @@ def toggle_theme():
         return redirect(url_for('routes.perfil'))
 
     return render_template('perfil.html', atividades=atividades, usuario=current_user)
-
-# ------------------------
-# RECUPERAÇÃO DE SENHA
-# ------------------------
-@routes.route('/forgot_password', methods=['GET', 'POST'])
-def forgot_password():
-    form = RequestResetForm()
-    if form.validate_on_submit():
-        user = Usuario.query.filter_by(email=form.email.data).first()
-        if user:
-            token = generate_reset_token(user.id)
-            send_reset_email(user, token)
-        flash('Se o email estiver cadastrado, você receberá instruções para redefinir a senha.', 'info')
-        return redirect(url_for('auth.login'))
-    return render_template('forgot_password.html', form=form)
-
-@routes.route('/reset_password/<token>', methods=['GET', 'POST'])
-def reset_password(token):
-    user_id = verify_reset_token(token)
-    if not user_id:
-        flash('O link é inválido ou expirou.', 'warning')
-        return redirect(url_for('routes.forgot_password'))
-
-    form = ResetPasswordForm()
-    if form.validate_on_submit():
-        user = Usuario.query.get(user_id)
-        user.set_password(form.password.data)
-        db.session.commit()
-
-        flash('Senha redefinida com sucesso! Faça login.', 'success')
-        return redirect(url_for('auth.login'))
-
-    return render_template('reset_password.html', form=form)
