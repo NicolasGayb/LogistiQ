@@ -11,6 +11,7 @@ Agora com suporte a **PostgreSQL** para produção, hospedagem própria no **Dig
 * [Destaques Visuais](#destaques-visuais)
 * [Tecnologias Utilizadas](#tecnologias-utilizadas)
 * [Estrutura do Projeto](#estrutura-do-projeto)
+* [Aba de Usuários](#aba-de-usuarios)
 * [Instalação](#instalação)
 * [Uso](#uso)
 * [Banco de Dados](#banco-de-dados)
@@ -79,6 +80,23 @@ LogistiQ/
 │── CODE_OF_CONDUCT.md
 ```
 
+---
+
+## Aba Usuários
+
+Permite que administradores gerenciem usuários da plataforma.
+
+- **Rota:** `/admin/usuarios`
+- **Acesso:** Administrador
+- **Funcionalidades:**
+  - Listar usuários (25 por página)
+  - Filtrar por nome, email, status (ativo/inativo) e tipo de usuário
+  - Criar, editar e excluir usuários
+- **Observações:**
+  - Campos obrigatórios ao criar: nome, username, email, role, senha
+  - Senha é opcional na edição
+  - Mensagens de sucesso e erro são exibidas via flash
+ 
 ---
 
 ## Instalação
