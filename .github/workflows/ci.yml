@@ -11,7 +11,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
+    # Test job to run unit tests and coverage
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
