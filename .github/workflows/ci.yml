@@ -68,6 +68,8 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
+          debug: true
+          script_stop: true
           script: |
             PROJECT_DIR="/home/logistiq/LogistiQ"
             VENV_DIR="$PROJECT_DIR/venv"
