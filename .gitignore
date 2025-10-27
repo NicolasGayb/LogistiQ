@@ -37,4 +37,3 @@ estoque.db
 *.db-journal
 *.log
 *.out
-*.auxS
