@@ -1,0 +1,28 @@
+{
+  "name": "logistiq",
+  "version": "1.0.0",
+  "description": "Sistema web simples para **gestão e controle de processos**, desenvolvido com Python e Flask. Ideal para aprendizado e projetos de portfólio.\r Agora com suporte a **PostgreSQL** para produção, hospedagem própria no **DigitalOcean** e domínio oficial: [logistiq.studio](https://logistiq.studio).",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NicolasGayb/LogistiQ.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NicolasGayb/LogistiQ/issues"
+  },
+  "homepage": "https://github.com/NicolasGayb/LogistiQ#readme",
+  "devDependencies": {
+    "cypress": "^15.5.0"
+  }
+}
