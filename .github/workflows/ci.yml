@@ -11,7 +11,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    # Test job to run unit tests and coverage
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -79,6 +78,8 @@ jobs:
 
             echo "🔹 Atualizando repositório Git..."
             cd $PROJECT_DIR
+            echo "🧹 Limpando diretório antigo..."
+            sudo rm -rf $PROJECT_DIR/*
             git config --global --add safe.directory $PROJECT_DIR
             git reset --hard
             git pull origin main
@@ -94,7 +95,8 @@ jobs:
             pip install -r requirements.txt
 
             echo "🔹 Reiniciando serviços..."
-            sudo systemctl restart logistiq
+            sudo systemctl reload logistiq || sudo systemctl restart logistiq
             sudo systemctl restart nginx
 
             echo "✅ Deploy concluído com sucesso!"
+            echo "🔗 Acesse em: https://logistiq.studio"
