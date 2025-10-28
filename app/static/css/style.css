@@ -1,0 +1,276 @@
+/* ==========================
+   🎨 Design System
+   ========================== */
+:root {
+  --brand-700: #2e7d32;
+  --brand-600: #388e3c;
+  --brand-500: #43a047;
+  --brand-100: #e8f5e9;
+  --dark-bg: #121212;
+  --dark-card: #1f1f1f;
+  --dark-text: #e0e0e0;
+  --dark-link-hover: rgba(255, 255, 255, 0.15);
+  --transition: all 0.3s ease-in-out;
+}
+
+/* ==========================
+   🌞 Modo Claro
+   ========================== */
+body.light {
+  background-color: #f5f5f5;
+  color: #212529;
+}
+body.light .navbar-green {
+  background-color: var(--brand-700);
+}
+body.light .navbar-green .nav-link {
+  color: #dff5e1;
+  font-weight: 500;
+}
+body.light .navbar-green .nav-link:hover,
+body.light .navbar-green .nav-link.active {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.12);
+  border-radius: 0.5rem;
+}
+
+/* ==========================
+   🌙 Modo Escuro
+   ========================== */
+body.dark {
+  background-color: var(--dark-bg);
+  color: var(--dark-text);
+}
+body.dark .navbar-green {
+  background-color: var(--dark-card);
+}
+body.dark .navbar-green .nav-link {
+  color: var(--dark-text);
+  font-weight: 500;
+}
+body.dark .navbar-green .nav-link:hover,
+body.dark .navbar-green .nav-link.active {
+  color: #fff;
+  background-color: var(--dark-link-hover);
+  border-radius: 0.5rem;
+}
+
+/* ==========================
+   🧱 Navbar e elementos
+   ========================== */
+.navbar {
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1030;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.navbar-brand .logo-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--brand-600), var(--brand-700));
+  color: #fff;
+  margin-right: 0.6rem;
+  font-size: 1rem;
+}
+
+.nav-link i {
+  font-size: 1rem;
+  vertical-align: middle;
+}
+
+/* ==========================
+   👤 Avatar e Botões
+   ========================== */
+.user-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.3rem 0.9rem;
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+.user-pill:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.user-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+.user-name {
+  max-width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+
+.btn-logout {
+  background: linear-gradient(135deg, #43a047, #2e7d32);
+  color: #fff;
+  border: none;
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+}
+.btn-logout:hover {
+  background: linear-gradient(135deg, #2e7d32, #43a047);
+  transform: translateY(-1px);
+  box-shadow: 0 0.25rem 0.6rem rgba(0, 0, 0, 0.18);
+}
+
+/* ==========================
+   🌗 Switch de Tema iOS
+   ========================== */
+.theme-switch {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 28px;
+  align-self: center;
+  margin-right: 10px;
+}
+.theme-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #c5c5c5;
+  transition: var(--transition);
+  border-radius: 30px;
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
+}
+.slider:before {
+  position: absolute;
+  content: "🌙";
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #fff;
+  transition: var(--transition);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+}
+input:checked + .slider {
+  background-color: var(--brand-600);
+}
+input:checked + .slider:before {
+  transform: translateX(24px);
+  content: "☀️";
+}
+
+/* ==========================
+   🏠 Layout da Home
+   ========================== */
+body {
+  padding-top: 70px;
+}
+
+.container-home {
+  min-height: calc(100vh - 180px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.container-home h1 {
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+.container-home p {
+  color: #555;
+  margin-bottom: 2rem;
+}
+
+.home-cards {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.home-cards .card {
+  width: 320px;
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  padding: 2rem 1.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: none;
+}
+.home-cards .card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.home-cards .card h3 {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+.home-cards .card p {
+  font-size: 0.95rem;
+  color: #666;
+  margin-bottom: 1.2rem;
+}
+
+.home-cards .btn {
+  background-color: var(--brand-600);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  transition: 0.2s;
+}
+.home-cards .btn:hover {
+  background-color: var(--brand-700);
+}
+
+/* Dark Mode Cards */
+body.dark .home-cards .card {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+}
+body.dark .home-cards .card p {
+  color: #ccc;
+}
+
+/* ==========================
+   🧭 Rodapé
+   ========================== */
+footer {
+  text-align: center;
+  padding: 2rem 0;
+  font-size: 0.9rem;
+  color: gray;
+}

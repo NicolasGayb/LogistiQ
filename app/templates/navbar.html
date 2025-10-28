@@ -9,73 +9,12 @@
 
   <!-- Ícones -->
   <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/1041/1041916.png">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
-  <style>
-    :root{
-      --brand-700:#2e7d32;
-      --brand-600:#388e3c;
-      --brand-500:#43a047;
-      --brand-100:#e8f5e9;
-      --dark-bg:#121212;
-      --dark-card:#1f1f1f;
-      --dark-text:#e0e0e0;
-      --dark-link-hover:rgba(255,255,255,.15);
-    }
-
-    body.light { background-color:#f5f5f5; color:#212529; }
-    body.light .navbar-green { background-color: var(--brand-700); }
-    body.light .navbar-green .nav-link { color:#dff5e1; font-weight:500; }
-    body.light .navbar-green .nav-link:hover,
-    body.light .navbar-green .nav-link.active { color:#fff; background-color:rgba(255,255,255,.12); border-radius:.5rem; }
-
-    body.dark { background-color: var(--dark-bg); color: var(--dark-text); }
-    body.dark .navbar-green { background-color: var(--dark-card); }
-    body.dark .navbar-green .nav-link { color: var(--dark-text); font-weight:500; }
-    body.dark .navbar-green .nav-link:hover,
-    body.dark .navbar-green .nav-link.active { color:#fff; background-color: var(--dark-link-hover); border-radius:.5rem; }
-
-    .navbar { transition: background-color .3s ease, box-shadow .3s ease; }
-    .navbar-brand .logo-mark{
-      display:inline-grid; place-items:center;
-      width:34px;height:34px; border-radius:10px;
-      background:linear-gradient(135deg,var(--brand-600),var(--brand-700));
-      color:#fff; margin-right:.6rem; font-size:1rem;
-    }
-    .nav-link i{ font-size:1rem; vertical-align:middle; }
-
-    .user-pill{
-      display:flex; align-items:center; gap:.6rem;
-      padding:.3rem .9rem; border-radius:999px;
-      background-color:rgba(255,255,255,.08); 
-      color:#fff; text-decoration:none;
-      transition: background-color .2s ease;
-    }
-    .user-pill:hover{ background-color:rgba(255,255,255,.2); }
-
-    .user-avatar{
-      width:30px; height:30px; border-radius:50%;
-      display:grid; place-items:center;
-      background:linear-gradient(135deg,var(--brand-500),var(--brand-700));
-      color:#fff; font-weight:600; font-size:.85rem;
-    }
-    .user-name{ max-width:160px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:500; }
-
-    .btn-logout{
-      background: linear-gradient(135deg, #43a047, #2e7d32);
-      color: #fff; border:none;
-      padding: 0.4rem 1rem; border-radius:999px;
-      font-weight:500; transition: all 0.2s ease-in-out;
-    }
-    .btn-logout:hover{
-      background: linear-gradient(135deg, #2e7d32, #43a047);
-      transform: translateY(-1px); 
-      box-shadow: 0 0.25rem 0.6rem rgba(0,0,0,0.18);
-    }
-
-    footer { text-align:center; padding:2rem 0; font-size:.9rem; color:gray; }
-  </style>
+  <!-- Estilo centralizado -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
+
 <body class="{% if current_user.is_authenticated and current_user.tema_escuro %}dark{% else %}light{% endif %}">
 
   <!-- ===================== NAVBAR ===================== -->
@@ -128,7 +67,13 @@
         {% endif %}
       </ul>
 
+      <!-- SWITCH DE TEMA -->
       <div class="d-flex align-items-center gap-3">
+        <label class="theme-switch">
+          <input type="checkbox" id="themeCheckbox" onchange="toggleThemeSwitch()">
+          <span class="slider"></span>
+        </label>
+
         <a href="{{ url_for('routes.perfil') }}" class="user-pill">
           <span class="user-avatar">{{ (current_user.nome[:1] if current_user and current_user.nome else 'U')|upper }}</span>
           <span class="user-name">{{ current_user.nome }}</span>
@@ -163,6 +108,24 @@
   <footer>
     &copy; {{ current_year if current_year else "2025" }} LogistiQ. Todos os direitos reservados.
   </footer>
+
+  <!-- ===================== SCRIPT TEMA ===================== -->
+  <script>
+    const checkbox = document.getElementById("themeCheckbox");
+    const savedTheme = localStorage.getItem("theme");
+    const html = document.documentElement;
+
+    if (savedTheme) {
+      html.setAttribute("data-theme", savedTheme);
+      checkbox.checked = savedTheme === "dark";
+    }
+
+    function toggleThemeSwitch() {
+      const newTheme = checkbox.checked ? "dark" : "light";
+      html.setAttribute("data-theme", newTheme);
+      localStorage.setItem("theme", newTheme);
+    }
+  </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
