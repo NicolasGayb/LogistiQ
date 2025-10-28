@@ -9,6 +9,7 @@ estoque.db
 .pytest_cache/
 .coverage
 .coverage.*
+.venv
 *.pyc
 *.pyo
 *.pyd
