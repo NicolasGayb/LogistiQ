@@ -1,6 +1,6 @@
-/* ==========================
+/* ==============================
    🎨 Design System
-   ========================== */
+   ============================== */
 :root {
   --brand-700: #2e7d32;
   --brand-600: #388e3c;
@@ -15,22 +15,26 @@
 
 body {
   transition: background-color 0.4s ease, color 0.4s ease;
+  padding-top: 70px; /* espaçamento fixo p/ navbar */
 }
 
-/* ==========================
+/* ==============================
    🌞 Modo Claro
-   ========================== */
+   ============================== */
 body.light {
   background-color: #f5f5f5;
   color: #212529;
 }
+
 body.light .navbar-green {
   background-color: var(--brand-700);
 }
+
 body.light .navbar-green .nav-link {
   color: #dff5e1;
   font-weight: 500;
 }
+
 body.light .navbar-green .nav-link:hover,
 body.light .navbar-green .nav-link.active {
   color: #fff;
@@ -38,35 +42,42 @@ body.light .navbar-green .nav-link.active {
   border-radius: 0.5rem;
 }
 
-/* ==========================
+/* ==============================
    🌙 Modo Escuro
-   ========================== */
+   ============================== */
 body.dark {
   background-color: var(--dark-bg);
   color: var(--dark-text);
 }
-body.dark .card,
-body.dark .card-header,
-body.dark .card-footer {
-  background-color: #1e1e1e !important;
-  color: #f5f5f5 !important;
-  border-color: #2a2a2a !important;
+
+/* Alertas */
+body.dark .alert {
+  border-color: #2a2a2a;
 }
-body.dark .table {
-  background-color: #1b1b1b !important;
-  color: #e0e0e0 !important;
+body.dark .alert-info {
+  background: #12363a;
+  color: #d7f4ff;
+  border-color: #1f565d;
 }
-body.dark .table th,
-body.dark .table td {
-  border-color: #2a2a2a !important;
+
+/* Badges */
+body.dark .badge.bg-primary {
+  background: #2b6cb0 !important;
 }
-body.dark .table-striped tbody tr:nth-of-type(odd) {
-  background-color: rgba(255, 255, 255, 0.05) !important;
+body.dark .badge.bg-success {
+  background: #2f855a !important;
 }
-body.dark .form-control {
-  background-color: #2b2b2b !important;
-  color: #fff !important;
-  border: 1px solid #3a3a3a !important;
+
+/* Botões */
+body.dark .btn-warning {
+  color: #1a1a1a;
+}
+body.dark .btn-danger {
+  color: #fff;
+}
+body.dark .btn-close {
+  filter: invert(1) grayscale(1);
+  opacity: 0.8;
 }
 body.dark .btn-light {
   background-color: #eaeaea !important;
@@ -75,6 +86,31 @@ body.dark .btn-light {
 body.dark .btn-light:hover {
   background-color: #f8f8f8 !important;
 }
+
+/* Cards */
+body.dark .card,
+body.dark .card-body {
+  background-color: #1e1e1e;
+  color: #eaeaea;
+}
+body.dark .card canvas {
+  background: transparent;
+}
+body.dark .card-header,
+body.dark .card-footer {
+  background: #151515;
+  color: #f1f1f1;
+  border-color: #2a2a2a;
+}
+
+/* Inputs */
+body.dark .form-control {
+  background-color: #2b2b2b !important;
+  color: #fff !important;
+  border: 1px solid #3a3a3a !important;
+}
+
+/* Navbar */
 body.dark .navbar-green {
   background-color: var(--dark-card);
 }
@@ -89,9 +125,36 @@ body.dark .navbar-green .nav-link.active {
   border-radius: 0.5rem;
 }
 
-/* ==========================
+/* Tabelas */
+body.dark .table {
+  background: #181818;
+  color: #e6e6e6;
+}
+body.dark .table th,
+body.dark .table td {
+  border-color: #2a2a2a;
+}
+body.dark .table thead th {
+  background: #1f1f1f;
+  color: #f1f1f1;
+}
+body.dark .table-striped > tbody > tr:nth-of-type(odd) {
+  background: #1a1a1a;
+}
+body.dark .table-hover > tbody > tr:hover {
+  background: #242424;
+}
+body.dark .table .form-control,
+body.dark .table .form-control:focus {
+  background: #2b2b2b;
+  color: #fff;
+  border: 1px solid #3a3a3a;
+  box-shadow: none;
+}
+
+/* ==============================
    🧱 Navbar e elementos
-   ========================== */
+   ============================== */
 .navbar {
   position: fixed;
   width: 100%;
@@ -118,9 +181,9 @@ body.dark .navbar-green .nav-link.active {
   vertical-align: middle;
 }
 
-/* ==========================
+/* ==============================
    👤 Avatar e Botões
-   ========================== */
+   ============================== */
 .user-pill {
   display: flex;
   align-items: center;
@@ -135,7 +198,6 @@ body.dark .navbar-green .nav-link.active {
 .user-pill:hover {
   background-color: rgba(255, 255, 255, 0.2);
 }
-
 .user-avatar {
   width: 30px;
   height: 30px;
@@ -154,7 +216,6 @@ body.dark .navbar-green .nav-link.active {
   text-overflow: ellipsis;
   font-weight: 500;
 }
-
 .btn-logout {
   background: linear-gradient(135deg, #43a047, #2e7d32);
   color: #fff;
@@ -170,9 +231,9 @@ body.dark .navbar-green .nav-link.active {
   box-shadow: 0 0.25rem 0.6rem rgba(0, 0, 0, 0.18);
 }
 
-/* ==========================
+/* ==============================
    🌗 Switch de Tema iOS
-   ========================== */
+   ============================== */
 .theme-switch {
   position: relative;
   display: inline-block;
@@ -221,13 +282,9 @@ input:checked + .slider:before {
   content: "☀️";
 }
 
-/* ==========================
-   🏠 Layout da Home
-   ========================== */
-body {
-  padding-top: 70px;
-}
-
+/* ==============================
+   🏠 Home Layout
+   ============================== */
 .container-home {
   min-height: calc(100vh - 180px);
   display: flex;
@@ -236,7 +293,6 @@ body {
   align-items: center;
   text-align: center;
 }
-
 .container-home h1 {
   font-weight: 700;
   margin-bottom: 0.5rem;
@@ -245,7 +301,6 @@ body {
   color: #555;
   margin-bottom: 2rem;
 }
-
 .home-cards {
   display: flex;
   justify-content: center;
@@ -253,7 +308,6 @@ body {
   flex-wrap: wrap;
   gap: 2rem;
 }
-
 .home-cards .card {
   width: 320px;
   background: #fff;
@@ -267,7 +321,6 @@ body {
   transform: translateY(-6px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
-
 .home-cards .card h3 {
   margin-bottom: 0.5rem;
   font-weight: 600;
@@ -277,7 +330,6 @@ body {
   color: #666;
   margin-bottom: 1.2rem;
 }
-
 .home-cards .btn {
   background-color: var(--brand-600);
   color: #fff;
@@ -299,12 +351,84 @@ body.dark .home-cards .card p {
   color: #ccc;
 }
 
-/* ==========================
+/* ==============================
    🧭 Rodapé
-   ========================== */
+   ============================== */
 footer {
   text-align: center;
   padding: 2rem 0;
   font-size: 0.9rem;
   color: gray;
+}
+/* ==========================
+   🔧 Correções visuais modo escuro
+   ========================== */
+body.dark .card {
+  background-color: #181818 !important;
+  color: #e0e0e0 !important;
+  border-color: #2a2a2a !important;
+}
+
+body.dark .card-header,
+body.dark .card-footer {
+  background-color: #1f1f1f !important;
+  color: #f5f5f5 !important;
+  border-color: #333 !important;
+}
+
+body.dark .form-control {
+  background-color: #2a2a2a !important;
+  color: #f1f1f1 !important;
+  border: 1px solid #3a3a3a !important;
+}
+
+body.dark .form-control::placeholder {
+  color: #bbb !important;
+}
+
+/* === tabela corrigida === */
+body.dark .table {
+  background-color: #1b1b1b !important;
+  color: #e8e8e8 !important;
+  border-collapse: collapse;
+}
+
+body.dark .table th,
+body.dark .table td {
+  background-color: #1e1e1e !important;
+  color: #f0f0f0 !important;
+  border-color: #2c2c2c !important;
+}
+
+body.dark .table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: #242424 !important;
+}
+
+body.dark .table-hover > tbody > tr:hover {
+  background-color: #2e2e2e !important;
+}
+
+body.dark .table .form-control {
+  background-color: #303030 !important;
+  color: #fff !important;
+  border: 1px solid #444 !important;
+}
+
+/* === botoes dentro da tabela === */
+body.dark .table .btn-warning {
+  background-color: #ffb300 !important;
+  color: #111 !important;
+  border: none !important;
+}
+
+body.dark .table .btn-danger {
+  background-color: #e53935 !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+/* === corrigir visibilidade dos gráficos === */
+body.dark canvas {
+  background-color: #1a1a1a !important;
+  border-radius: 6px;
 }
