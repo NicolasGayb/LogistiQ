@@ -74,7 +74,7 @@ jobs:
             VENV_DIR="$PROJECT_DIR/venv"
 
             echo "🔹 Ajustando permissões..."
-            sudo chown -R logistiq:logistiq $PROJECT_DIR
+            sudo chown -R $USER:$USER $PROJECT_DIR || true
 
             echo "🔹 Atualizando repositório Git..."
             cd $PROJECT_DIR
