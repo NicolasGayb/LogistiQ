@@ -68,11 +68,10 @@
       </ul>
 
       <!-- SWITCH DE TEMA -->
-      <div class="d-flex align-items-center gap-3">
-        <label class="theme-switch">
-          <input type="checkbox" id="themeCheckbox" onchange="toggleThemeSwitch()">
-          <span class="slider"></span>
-        </label>
+      <label class="theme-switch">
+        <input type="checkbox" id="themeCheckbox">
+        <span class="slider"></span>
+      </label>
 
         <a href="{{ url_for('routes.perfil') }}" class="user-pill">
           <span class="user-avatar">{{ (current_user.nome[:1] if current_user and current_user.nome else 'U')|upper }}</span>
@@ -112,19 +111,32 @@
   <!-- ===================== SCRIPT TEMA ===================== -->
   <script>
     const checkbox = document.getElementById("themeCheckbox");
+    const body = document.body;
+
+    // 🧠 Carrega o tema salvo no localStorage (mantém a preferência)
     const savedTheme = localStorage.getItem("theme");
-    const html = document.documentElement;
-
-    if (savedTheme) {
-      html.setAttribute("data-theme", savedTheme);
-      checkbox.checked = savedTheme === "dark";
+    if (savedTheme === "dark") {
+      body.classList.remove("light");
+      body.classList.add("dark");
+      checkbox.checked = true;
+    } else {
+      body.classList.remove("dark");
+      body.classList.add("light");
+      checkbox.checked = false;
     }
 
-    function toggleThemeSwitch() {
-      const newTheme = checkbox.checked ? "dark" : "light";
-      html.setAttribute("data-theme", newTheme);
-      localStorage.setItem("theme", newTheme);
-    }
+    // 🌗 Alterna o tema ao clicar no switch
+    checkbox.addEventListener("change", () => {
+      if (checkbox.checked) {
+        body.classList.add("dark");
+        body.classList.remove("light");
+        localStorage.setItem("theme", "dark");
+      } else {
+        body.classList.add("light");
+        body.classList.remove("dark");
+        localStorage.setItem("theme", "light");
+      }
+    });
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
