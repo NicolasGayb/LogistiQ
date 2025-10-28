@@ -1,11 +1,22 @@
+:root{
+  --primary: #2e7d32;
+  --secondary: #81c784;
+  --background-light: #f7f9f8;
+  --background-dark: #1a1a1a;
+  --text-light: #fff;
+  --text-dark: #333;
+  --card-radius: 12px;
+  --shadow-soft: 0 4px 15px rgba(0,0,0,0.1);
+}
+
 body {
     font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
+    background-color: var(--background-light);
     margin: 40px;
 }
 
 h1, h2 {
-    color: #333;
+    color: var(--text-dark);
 }
 
 form, table {
