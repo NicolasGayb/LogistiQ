@@ -84,7 +84,7 @@ jobs:
           sleep 10
           curl -I http://127.0.0.1:5000 || echo "⚠️ Servidor não respondeu"
 
-      - name: 🧩 Criar usuário administrador de teste
+      - name: 🧩 Criar usuários de teste
         run: |
           source venv/bin/activate
           python - <<'PYCODE'
@@ -110,7 +110,7 @@ jobs:
                   db.session.add(user)
                   db.session.commit()
                   print(f"✅ Usuário '{nome}' ({role}) criado com sucesso.")
-              else:
+                else:
                   print(f"ℹ️ Usuário com email '{email}' já existe. Pulando criação.")
 
               criar_usuario("Teste Cypress", "TesteCypress", "teste@example.com", "senha_teste", "administrador")
