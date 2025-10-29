@@ -129,8 +129,10 @@ jobs:
         if: always()
         run: |
           mkdir -p cypress/reports/html
-          cp -r cypress/reports/* cypress/reports/html/ || true
-          echo "✅ Relatório Cypress HTML pronto para publicação."
+          echo "📦 Mesclando relatórios Cypress..."
+          npx mochawesome-merge cypress/reports/*.json > cypress/reports/report.json
+          echo "🎨 Gerando HTML final..."
+          npx marge cypress/reports/report.json -f index -o cypress/reports/html
 
       - name: 📤 Upload do relatório Cypress
         if: always()
