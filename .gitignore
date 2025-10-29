@@ -67,7 +67,6 @@ cypress/.cache/
 cypress/results/
 
 # Mochawesome merged reports
-*.json
 !cypress/reports/.gitkeep  # mantém a pasta vazia no Git
 
 # ============================================

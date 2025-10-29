@@ -91,28 +91,94 @@ jobs:
           path: cypress/reports/html
 
   # ========================
-  # 🔹 PUBLICAÇÃO DO DASHBOARD
+  # 🔹 PUBLICAÇÃO DO DASHBOARD + DOCS
   # ========================
   publish-report:
-    name: 📊 Publicar Relatório QA (GitHub Pages)
+    name: 📊 Publicar Relatório QA + Documentação
     runs-on: ubuntu-latest
     needs: e2e
     if: always()  # publica mesmo se houver falhas
 
     steps:
+      - name: 📥 Checkout repositório
+        uses: actions/checkout@v4
+
       - name: 📥 Baixar artefato de relatório
         uses: actions/download-artifact@v4
         with:
           name: cypress-report
           path: cypress/reports/html
 
+      # 🧾 Histórico de execuções
+      - name: 🧾 Atualizar histórico de execuções
+        run: |
+          sudo apt-get update && sudo apt-get install -y jq
+          mkdir -p cypress/reports/html/history
+          HIST_FILE="cypress/reports/html/history/history.json"
+
+          if [ ! -f "$HIST_FILE" ]; then
+            echo "[]" > "$HIST_FILE"
+          fi
+
+          PASSES=$(jq '.stats.passes' cypress/reports/report.json)
+          FAILS=$(jq '.stats.failures' cypress/reports/report.json)
+          TOTAL=$(jq '.stats.tests' cypress/reports/report.json)
+          DURATION=$(jq '.stats.duration' cypress/reports/report.json)
+          DATE=$(date +"%Y-%m-%d %H:%M:%S")
+
+          jq ". += [{date:\"$DATE\", passes:$PASSES, fails:$FAILS, total:$TOTAL, duration:$DURATION}]" "$HIST_FILE" > tmp.$$.json && mv tmp.$$.json "$HIST_FILE"
+          jq '.[-5:]' "$HIST_FILE" > tmp.$$.json && mv tmp.$$.json "$HIST_FILE"
+
+      # 📘 Documentação Técnica
+      - name: 📝 Gerar documentação técnica (Markdown)
+        run: |
+          mkdir -p docs
+          REPORT="docs/test-report.md"
+          DATE=$(date +"%Y-%m-%d %H:%M:%S")
+          COMMIT=$(git rev-parse --short HEAD)
+          AUTHOR=$(git log -1 --pretty=format:'%an')
+          BRANCH=${GITHUB_REF##*/}
+          PASSES=$(jq '.stats.passes' cypress/reports/report.json)
+          FAILS=$(jq '.stats.failures' cypress/reports/report.json)
+          TOTAL=$(jq '.stats.tests' cypress/reports/report.json)
+          DURATION=$(jq '.stats.duration' cypress/reports/report.json)
+
+          echo "# 📘 LogistiQ - Relatório Técnico de Testes Automatizados" > $REPORT
+          echo "" >> $REPORT
+          echo "**Última execução:** $DATE" >> $REPORT
+          echo "**Branch:** \`$BRANCH\`" >> $REPORT
+          echo "**Commit:** \`$COMMIT\`" >> $REPORT
+          echo "**Autor:** $AUTHOR" >> $REPORT
+          echo "" >> $REPORT
+          echo "---" >> $REPORT
+          echo "" >> $REPORT
+          echo "## 🌐 Testes E2E (Cypress)" >> $REPORT
+          echo "- Total de testes: $TOTAL" >> $REPORT
+          echo "- Sucessos: $PASSES ✅" >> $REPORT
+          echo "- Falhas: $FAILS ❌" >> $REPORT
+          echo "- Duração: $((DURATION / 1000))s" >> $REPORT
+          echo "- Histórico visual: [📊 Dashboard QA](https://nicolasgayb.github.io/LogistiQ)" >> $REPORT
+          echo "" >> $REPORT
+          echo "---" >> $REPORT
+          echo "_Gerado automaticamente pelo pipeline CI/CD do LogistiQ._" >> $REPORT
+
+      # 🧾 Commit automático da documentação no repositório
+      - name: 📦 Commit & Push da Documentação
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/test-report.md
+          git commit -m "📘 Atualização automática da documentação técnica de testes"
+          git push origin main || true
+
+      # 🌐 Publicar Dashboard QA no GitHub Pages
       - name: 🌐 Publicar no GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: cypress/reports/html
-          commit_message: "📊 Atualização automática do relatório Cypress"
+          commit_message: "📊 Atualização automática do relatório Cypress + histórico + documentação"
 
   # ========================
   # 🔹 DEPLOY NO SERVIDOR
