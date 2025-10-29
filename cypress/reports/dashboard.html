@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>📊 LogistiQ - Relatórios de Testes E2E</title>
+
+  <!-- Estilos e libs -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --green: #2e7d32;
+      --green-light: #43a047;
+      --gray-dark: #1e1e1e;
+      --gray-light: #f8f9fa;
+    }
+
+    body {
+      background: var(--gray-light);
+      color: #212529;
+      padding: 2rem;
+      font-family: "Inter", sans-serif;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.dark {
+      background: var(--gray-dark);
+      color: #e0e0e0;
+    }
+
+    .navbar {
+      background: var(--green);
+      border-radius: 10px;
+      margin-bottom: 2rem;
+      padding: 1rem;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .navbar h1 {
+      font-size: 1.5rem;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .theme-toggle {
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.4rem;
+      transition: transform 0.2s;
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.2);
+    }
+
+    .card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      background: white;
+      transition: all 0.3s;
+    }
+
+    body.dark .card {
+      background: #2b2b2b;
+      box-shadow: 0 4px 12px rgba(255,255,255,0.08);
+    }
+
+    .card h4 {
+      color: var(--green);
+    }
+
+    .btn-green {
+      background: var(--green);
+      color: white;
+      border-radius: 6px;
+    }
+
+    .btn-green:hover {
+      background: var(--green-light);
+      color: white;
+    }
+
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #777;
+    }
+
+    body.dark footer {
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <h1>📦 LogistiQ | Dashboard de Testes</h1>
+    <button id="themeToggle" class="theme-toggle" title="Alternar tema">🌗</button>
+  </nav>
+
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="card p-4 text-center">
+          <canvas id="chart" height="160"></canvas>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card p-4">
+          <h4>Resumo da Execução</h4>
+          <hr>
+          <div id="summary" class="mb-3">
+            <p>Carregando dados do relatório...</p>
+          </div>
+          <a href="./report.html" class="btn btn-green w-100" target="_blank">
+            🔍 Ver Relatório Completo (Mochawesome)
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <footer class="mt-4">
+      <p>© 2025 LogistiQ | Relatórios automatizados de testes E2E</p>
+    </footer>
+  </div>
+
+  <script>
+    // 🌗 Tema (Dark/Light)
+    const body = document.body;
+    const themeToggle = document.getElementById("themeToggle");
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") body.classList.add("dark");
+
+    themeToggle.addEventListener("click", () => {
+      body.classList.toggle("dark");
+      localStorage.setItem("theme", body.classList.contains("dark") ? "dark" : "light");
+    });
+
+    // 📊 Carregar relatório Cypress
+    fetch("./report.json")
+      .then(res => res.json())
+      .then(data => {
+        const stats = data.stats;
+        document.getElementById("summary").innerHTML = `
+          <b>Total de testes:</b> ${stats.tests}<br>
+          <b>Sucessos:</b> ${stats.passes}<br>
+          <b>Falhas:</b> ${stats.failures}<br>
+          <b>Pendentes:</b> ${stats.pending}<br>
+          <b>Duração total:</b> ${(stats.duration / 1000).toFixed(2)}s
+        `;
+
+        const ctx = document.getElementById("chart");
+        new Chart(ctx, {
+          type: "doughnut",
+          data: {
+            labels: ["Sucessos", "Falhas", "Pendentes"],
+            datasets: [{
+              data: [stats.passes, stats.failures, stats.pending],
+              backgroundColor: ["#2e7d32", "#dc3545", "#ffc107"]
+            }]
+          },
+          options: {
+            plugins: {
+              legend: { position: "bottom" },
+              title: { display: true, text: "Status dos Testes E2E" }
+            }
+          }
+        });
+      })
+      .catch(() => {
+        document.getElementById("summary").innerHTML =
+          "<p class='text-danger'>❌ Não foi possível carregar o relatório JSON.</p>";
+      });
+  </script>
+</body>
+</html>

@@ -63,13 +63,11 @@ cypress/videos/
 cypress/screenshots/
 cypress/downloads/
 cypress/reports/.jsons/
-cypress/reports/html/
 cypress/.cache/
 cypress/results/
 
 # Mochawesome merged reports
 *.json
-*.html
 !cypress/reports/.gitkeep  # mantém a pasta vazia no Git
 
 # ============================================

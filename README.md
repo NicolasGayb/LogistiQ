@@ -3,6 +3,7 @@
 Sistema web simples para **gestão e controle de processos**, desenvolvido com Python e Flask. Ideal para aprendizado e projetos de portfólio.
 Agora com suporte a **PostgreSQL** para produção, hospedagem própria no **DigitalOcean** e domínio oficial: [logistiq.studio](https://logistiq.studio).
 
+[![Cypress E2E](https://github.com/NicolasGayb/LogistiQ/actions/workflows/ci.yml/badge.svg)](https://nicolasgayb.github.io/LogistiQ/)
 ---
 
 ## 📑 Tabela de Conteúdo

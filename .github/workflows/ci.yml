@@ -1,26 +1,29 @@
-name: CI/CD Deploy Logistiq
+name: CI/CD LogistiQ 🧪🚀
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
+  # ========================
+  # 🔹 TESTES BACKEND (pytest)
+  # ========================
   test:
+    name: 🧠 Testes Unitários (Pytest)
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
+      - name: 📥 Checkout do código
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: 🐍 Configurar Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.13'
 
-      - name: Install dependencies
+      - name: 📦 Instalar dependências Python
         run: |
           python -m venv venv
           source venv/bin/activate
@@ -28,23 +31,27 @@ jobs:
           pip install -r requirements.txt
           pip install pytest pytest-cov
 
-      - name: Run tests with coverage
+      - name: 🧪 Executar testes com cobertura
         run: |
           source venv/bin/activate
           pytest --maxfail=1 --disable-warnings --cov=app --cov-report=term-missing
 
-      - name: Upload coverage report
+      - name: 📤 Upload do relatório de cobertura
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
           path: .coverage
 
+  # ========================
+  # 🔹 TESTES E2E (Cypress)
+  # ========================
   e2e:
+    name: 🌐 Testes E2E (Cypress)
     runs-on: ubuntu-latest
     needs: test
 
     steps:
-      - name: 📥 Checkout repositório
+      - name: 📥 Checkout do repositório
         uses: actions/checkout@v4
 
       - name: 🧰 Instalar Node.js
@@ -52,7 +59,7 @@ jobs:
         with:
           node-version: '20'
 
-      - name: 📦 Instalar dependências Node
+      - name: 📦 Instalar dependências do Cypress
         run: npm ci
 
       - name: 🚀 Iniciar servidor Flask
@@ -70,32 +77,36 @@ jobs:
       - name: 📊 Gerar relatório Cypress (Mochawesome)
         if: always()
         run: |
+          mkdir -p cypress/reports/html
           npx mochawesome-merge cypress/reports/*.json > cypress/reports/report.json
           npx marge cypress/reports/report.json -f report -o cypress/reports/html
+          cp cypress/reports/report.json cypress/reports/html/
+          cp cypress/reports/dashboard.html cypress/reports/html/ || true
 
-      - name: 📤 Upload do relatório Cypress (artefato)
+      - name: 📤 Upload do relatório Cypress
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: cypress-report
           path: cypress/reports/html
 
+  # ========================
+  # 🔹 PUBLICAÇÃO DO DASHBOARD
+  # ========================
   publish-report:
+    name: 📊 Publicar Relatório QA (GitHub Pages)
     runs-on: ubuntu-latest
     needs: e2e
-    if: always() # publica mesmo se houver falha nos testes
+    if: always()  # publica mesmo se houver falhas
 
     steps:
-      - name: 📥 Checkout repositório
-        uses: actions/checkout@v4
-
-      - name: 📦 Baixar relatório gerado
+      - name: 📥 Baixar artefato de relatório
         uses: actions/download-artifact@v4
         with:
           name: cypress-report
           path: cypress/reports/html
 
-      - name: 🌐 Publicar relatório no GitHub Pages
+      - name: 🌐 Publicar no GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -103,28 +114,32 @@ jobs:
           publish_dir: cypress/reports/html
           commit_message: "📊 Atualização automática do relatório Cypress"
 
+  # ========================
+  # 🔹 DEPLOY NO SERVIDOR
+  # ========================
   deploy:
+    name: 🚀 Deploy Produção (Servidor LogistiQ)
     runs-on: ubuntu-latest
     needs: [test, e2e]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
-      - name: Checkout code
+      - name: 📥 Checkout do código
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: 🐍 Configurar Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.13'
 
-      - name: Install dependencies (for validation)
+      - name: ⚙️ Instalar dependências
         run: |
           python -m venv venv
           source venv/bin/activate
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Deploy to server via SSH
+      - name: 📡 Deploy via SSH
         uses: appleboy/ssh-action@v0.1.8
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -140,20 +155,16 @@ jobs:
             echo "🔹 Ajustando permissões..."
             sudo chown -R $USER:$USER $PROJECT_DIR || true
 
-            echo "🔹 Atualizando repositório Git..."
+            echo "🔹 Atualizando repositório..."
             cd $PROJECT_DIR
-            echo "🧹 Limpando diretório antigo..."
-            sudo rm -rf $PROJECT_DIR/*
             git config --global --add safe.directory $PROJECT_DIR
-            git reset --hard
-            git pull origin main
+            git fetch --all
+            git reset --hard origin/main
 
-            echo "🔹 Criando virtualenv se não existir..."
+            echo "🔹 Recriando ambiente virtual..."
             if [ ! -d "$VENV_DIR" ]; then
               python3 -m venv $VENV_DIR
             fi
-
-            echo "🔹 Ativando virtualenv e instalando dependências..."
             source $VENV_DIR/bin/activate
             pip install --upgrade pip
             pip install -r requirements.txt
@@ -163,4 +174,4 @@ jobs:
             sudo systemctl restart nginx
 
             echo "✅ Deploy concluído com sucesso!"
-            echo "🔗 Acesse em: https://logistiq.studio"
+            echo "🔗 Acesse: https://logistiq.studio"
