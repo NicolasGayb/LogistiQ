@@ -15,8 +15,12 @@ migrate = Migrate()
 mail = Mail()
 load_dotenv()
 
+# Função de fábrica da aplicação
 def create_app(test_config=None):
-    app = Flask(__name__)
+    app = Flask(__name__,
+                static_folder='static',
+                template_folder='templates'
+                )
 
     # Config padrão
     secret_key = os.environ.get("SECRET_KEY") or secrets.token_hex(32)
