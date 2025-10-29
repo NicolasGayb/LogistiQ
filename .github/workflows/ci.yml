@@ -59,19 +59,62 @@ jobs:
         with:
           node-version: '20'
 
-      - name: 📦 Instalar dependências do Cypress
-        run: npm ci
+      - name: 🐍 Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
 
-      - name: 🚀 Iniciar servidor Flask
+      - name: 📦 Instalar dependências Python
         run: |
           python -m venv venv
           source venv/bin/activate
           pip install --upgrade pip
           pip install -r requirements.txt
-          nohup python run.py &
+
+      - name: 📦 Instalar dependências do Cypress
+        run: npm ci
+
+      - name: 🚀 Iniciar servidor Flask
+        env:
+          FLASK_APP: run.py
+          FLASK_ENV: testing
+        run: |
+          python -m venv venv
+          nohup flask run --host=0.0.0.0 --port=5000 &
+          echo "⏳ Aguardando o servidor iniciar..."
           sleep 10
+          curl -I http://127.0.0.1:5000 || echo "⚠️ Servidor não respondeu"
+
+      - name: 🧩 Criar usuário administrador de teste
+        run: |
+          source venv/bin/activate
+          python - <<'PYCODE'
+          from app import create_app, db
+          from app.models import Usuario
+          from werkzeug.security import generate_password_hash
+
+          app = create_app()
+          with app.app_context():
+              db.create_all()
+              user = Usuario.query.filter_by(email="teste@example.com").first()
+              if not user:
+                  admin = Usuario(
+                      nome="Teste Cypress",
+                      email="teste@example.com",
+                      senha=generate_password_hash("senha_teste"),
+                      role="administrador",
+                      ativo=True
+                  )
+                  db.session.add(admin)
+                  db.session.commit()
+                  print("✅ Usuário administrador criado: teste@example.com / senha_teste")
+              else:
+                  print("ℹ️ Usuário de teste já existe.")
+          PYCODE
 
       - name: 🧪 Executar testes Cypress
+        env:
+          CYPRESS_BASE_URL: http://localhost:5000
         run: npx cypress run --browser chrome
 
       - name: 📊 Gerar relatório Cypress (Mochawesome)
