@@ -103,7 +103,7 @@ jobs:
                       nome=nome,
                       username=username,
                       email=email,
-                      senha_hash=generate_password_hash("senha_teste"),
+                      senha=generate_password_hash("senha_teste"),
                       role=role,
                       ativo=ativo
                   )
