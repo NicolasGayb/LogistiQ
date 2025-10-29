@@ -1,40 +1,16 @@
 name: 🚀 Deploy Produção (Servidor LogistiQ)
 
 on:
-  push:
-    branches: [ main ]      # 🔹 Roda automaticamente ao fazer merge/push na main
-  workflow_dispatch:         # 🔹 Permite executar manualmente no GitHub
-
-permissions:
-  actions: read
-  contents: read
+  workflow_run:
+    workflows: ["CI/CD LogistiQ"]
+    types:
+      - completed                  # Dispara quando o CI/CD termina
 
 jobs:
-  # ==============================
-  # 🔎 Aguarda CI/CD anterior
-  # ==============================
-  wait-for-tests:
-    name: ✅ Verificar se o CI passou
-    runs-on: ubuntu-latest
-    steps:
-      - name: ⏳ Aguardando conclusão do CI/CD
-        uses: lewagon/wait-on-check-action@v1.3.4
-        with:
-          ref: ${{ github.ref }}
-          check-name: 'CI/CD LogistiQ'   # 🔹 Nome do workflow de testes (ajuste se o teu for diferente)
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 15              # Checa a cada 15 segundos
-
-  # ==============================
-  # 🚀 Deploy no Servidor LogistiQ
-  # ==============================
   deploy:
     name: 🚀 Deploy Produção (Servidor LogistiQ)
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-    needs: wait-for-tests
-    if: >
-      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-      (github.event_name == 'pull_request' && github.base_ref == 'main' && github.event.pull_request.merged == true)
 
     steps:
       - name: 📥 Checkout do código
@@ -64,9 +40,6 @@ jobs:
           script: |
             PROJECT_DIR="/home/logistiq/LogistiQ"
             VENV_DIR="$PROJECT_DIR/venv"
-
-            echo "🔹 Ajustando permissões..."
-            sudo chown -R $USER:$USER $PROJECT_DIR || true
 
             echo "🔹 Atualizando repositório..."
             cd $PROJECT_DIR
