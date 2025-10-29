@@ -4,7 +4,7 @@ Cypress.Commands.add('login', (email, password) => {
     cy.get('input[name="email"]').type(email);
     cy.get('input[name="senha"]').type(password);
     cy.get('button[type="submit"]').click();
-    });
+});
 
 Cypress.Commands.add('filtrarUsuarioStatus', (status) => {
     cy.get('select[name="ativo"]').select(status);
