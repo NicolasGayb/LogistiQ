@@ -54,13 +54,13 @@ describe('Gestão de Usuários - LogistiQ', () => {
     // Filtra usuários por status
     it('deve filtrar usuários ativos', () => {
         cy.get('select[name="ativo"]').select('Ativo');
-        cy.submit()
+        cy.submitForm()
         cy.url().should('include', 'ativo=ativo');
         cy.get('tbody tr').should('contain', 'Ativo');
     });
     it('deve filtrar usuários inativos', () => {
         cy.get('select[name="ativo"]').select('Inativo');
-        cy.submit()
+        cy.submitForm()
         cy.url().should('include', 'ativo=inativo');
         cy.get('tbody tr').should('contain', 'Inativo');
     });
@@ -71,31 +71,31 @@ describe('Gestão de Usuários - LogistiQ', () => {
     it('deve editar o nome de um usuário', () => {
         cy.editarUsuario();
         cy.get('input[name="nome"]').clear().type('Teste Cypress');
-        cy.submit()
+        cy.submitForm()
         cy.contains('Usuário atualizado com sucesso').should('be.visible');
     });
     it('deve editar o email de um usuário', () => {
         cy.editarUsuario();
         cy.get('input[name="email"]').clear().type('teste@example.com');
-        cy.submit()
+        cy.submitForm()
         cy.contains('Usuário atualizado com sucesso').should('be.visible');
     });
     it('deve editar o tipo de um usuário', () => {
         cy.editarUsuario();
         cy.get('select[name="role"]').select('Administrador');
-        cy.submit()
+        cy.submitForm()
         cy.contains('Usuário atualizado com sucesso').should('be.visible');
     });
     it('deve editar o status de um usuário', () => {
         cy.editarUsuario();
         cy.get('input[name="ativo"]').click();
-        cy.submit()
+        cy.submitForm()
         cy.contains('Usuário atualizado com sucesso').should('be.visible');
     });
     it('deve editar a senha de um usuário', () => {
         cy.editarUsuario();
         cy.get('input[name="senha"]').type('senha_teste');
-        cy.submit()
+        cy.submitForm()
         cy.contains('Usuário atualizado com sucesso').should('be.visible');
     });
 });

@@ -28,6 +28,6 @@ Cypress.Commands.add('editarUsuario', () => {
         });
 })
 
-Cypress.Commands.add('submit', () => {
+Cypress.Commands.add('submitForm', () => {
     cy.get('button[type="submit"]').click();
 });

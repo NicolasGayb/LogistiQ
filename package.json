@@ -9,6 +9,9 @@
   "scripts": {
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
+    "cypress:report:merge": "npx mochawesome-merge cypress/reports/*.json > cypress/reports/report.json",
+    "cypress:report:generate": "npx marge cypress/reports/report.json --reportDir cypress/reports/html --inline",
+    "test:e2e": "npm run cypress:run && npm run cypress:report:merge && npm run cypress:report:generate",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -26,6 +29,10 @@
     "@cypress/webpack-preprocessor": "^7.0.1",
     "assert": "^2.1.0",
     "cypress": "^13.13.0",
+    "cypress-mochawesome-reporter": "^4.0.2",
+    "mochawesome": "^7.1.4",
+    "mochawesome-merge": "^5.0.0",
+    "mochawesome-report-generator": "^6.3.0",
     "util": "^0.12.5"
   }
 }
