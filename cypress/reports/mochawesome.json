@@ -1,0 +1,127 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 2,
+    "passes": 2,
+    "pending": 0,
+    "failures": 0,
+    "start": "2025-10-29T21:14:15.120Z",
+    "end": "2025-10-29T21:14:19.933Z",
+    "duration": 4813,
+    "testsRegistered": 2,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "b411932d-8139-4b1b-8018-ca359c67c533",
+      "title": "",
+      "fullFile": "cypress\\e2e\\login.cy.js",
+      "file": "cypress\\e2e\\login.cy.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "f472991c-3e0a-4d99-b1e3-ede322e94c5a",
+          "title": "Login - LogistiQ",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "deve permitir login com as credenciais válidas",
+              "fullTitle": "Login - LogistiQ deve permitir login com as credenciais válidas",
+              "timedOut": null,
+              "duration": 3410,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.login('teste@example.com', 'senha_teste');",
+              "err": {},
+              "uuid": "e9a219ca-85fd-4ade-b291-f0ed8de8a877",
+              "parentUUID": "f472991c-3e0a-4d99-b1e3-ede322e94c5a",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "deve exibir mensagem de erro com credenciais inválidas",
+              "fullTitle": "Login - LogistiQ deve exibir mensagem de erro com credenciais inválidas",
+              "timedOut": null,
+              "duration": 1374,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.login('teste@invalido.com', 'senha_invalida');",
+              "err": {},
+              "uuid": "4cab2923-36f7-4819-a417-d4312f2af48c",
+              "parentUUID": "f472991c-3e0a-4d99-b1e3-ede322e94c5a",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "e9a219ca-85fd-4ade-b291-f0ed8de8a877",
+            "4cab2923-36f7-4819-a417-d4312f2af48c"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 4784,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports",
+        "charts": true,
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "embeddedScreenshots": true,
+        "inlineAssets": true
+      },
+      "version": "6.3.0"
+    }
+  }
+}

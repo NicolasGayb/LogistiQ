@@ -123,16 +123,19 @@ jobs:
       - name: 🧪 Executar testes Cypress
         env:
           CYPRESS_BASE_URL: http://localhost:5000
-        run: npx cypress run --browser chrome
+        run: npx cypress run --browser chrome --reporter mochawesome --reporter-options "reportDir=cypress/reports,overwrite=false,html=false,json=true"
 
-      - name: 📊 Gerar relatório Cypress (HTML)
+      - name: 📊 Mesclar relatórios Cypress
         if: always()
         run: |
-          mkdir -p cypress/reports/html
-          echo "📦 Mesclando relatórios Cypress..."
-          npx mochawesome-merge cypress/reports/*.json > cypress/reports/report.json
-          echo "🎨 Gerando HTML final..."
-          npx marge cypress/reports/report.json -f index -o cypress/reports/html
+          echo "📦 Mesclando relatórios JSON com Node..."
+          node merge-reports.js
+
+      - name: 🎨 Gerar relatório HTML
+        if: always()
+        run: |
+          echo "🎨 Gerando relatório HTML final..."
+          npx marge cypress/reports/merged.json -f index -o cypress/reports/html
 
       - name: 📤 Upload do relatório Cypress
         if: always()
