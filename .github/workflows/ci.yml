@@ -99,6 +99,7 @@ jobs:
               if not user:
                   admin = Usuario(
                       nome="Teste Cypress",
+                      username="TesteCypress",
                       email="teste@example.com",
                       senha=generate_password_hash("senha_teste"),
                       role="administrador",
