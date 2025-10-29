@@ -117,14 +117,12 @@ jobs:
           CYPRESS_BASE_URL: http://localhost:5000
         run: npx cypress run --browser chrome
 
-      - name: 📊 Gerar relatório Cypress (Mochawesome)
+      - name: 📊 Gerar relatório Cypress (HTML)
         if: always()
         run: |
           mkdir -p cypress/reports/html
-          npx mochawesome-merge cypress/reports/*.json > cypress/reports/report.json
-          npx marge cypress/reports/report.json -f report -o cypress/reports/html
-          cp cypress/reports/report.json cypress/reports/html/
-          cp cypress/reports/dashboard.html cypress/reports/html/ || true
+          cp -r cypress/reports/* cypress/reports/html/ || true
+          echo "✅ Relatório Cypress HTML pronto para publicação."
 
       - name: 📤 Upload do relatório Cypress
         if: always()
