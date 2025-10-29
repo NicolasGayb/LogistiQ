@@ -87,7 +87,6 @@ jobs:
 
       - name: 🧩 Criar usuário administrador de teste
         run: |
-          source venv/bin/activate
           python - <<'PYCODE'
           from app import create_app, db
           from app.models import Usuario
