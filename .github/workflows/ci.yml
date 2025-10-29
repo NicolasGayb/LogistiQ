@@ -39,9 +39,44 @@ jobs:
           name: coverage-report
           path: .coverage
 
-  deploy:
+  e2e:
     runs-on: ubuntu-latest
     needs: test
+
+    steps:
+      - name: 📥 Checkout repositório
+        uses: actions/checkout@v4
+
+      - name: 🧰 Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 📦 Instalar dependências Node
+        run: npm ci
+
+      - name: 🚀 Iniciar servidor Flask
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          nohup python run.py &
+          sleep 10 
+
+      - name: 🧪 Executar testes Cypress
+        run: npx cypress run --browser chrome
+
+      - name: 📊 Upload do relatório Cypress
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-report
+          path: cypress/reports/html
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [test, e2e]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
