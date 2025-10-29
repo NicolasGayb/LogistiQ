@@ -80,7 +80,7 @@ jobs:
           FLASK_ENV: testing
         run: |
           python -m venv venv
-          nohup flask run --host=0.0.0.0 --port=5000 &
+          nohup python run.py &
           echo "⏳ Aguardando o servidor iniciar..."
           sleep 10
           curl -I http://127.0.0.1:5000 || echo "⚠️ Servidor não respondeu"
