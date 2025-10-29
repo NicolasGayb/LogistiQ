@@ -70,9 +70,7 @@ jobs:
           source venv/bin/activate
           pip install --upgrade pip
           pip install -r requirements.txt
-
-      - name: 📦 Instalar dependências do Cypress
-        run: npm ci
+          npm ci
 
       - name: 🚀 Iniciar servidor Flask
         env:
@@ -80,6 +78,8 @@ jobs:
           FLASK_ENV: testing
         run: |
           python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
           nohup python run.py &
           echo "⏳ Aguardando o servidor iniciar..."
           sleep 10
