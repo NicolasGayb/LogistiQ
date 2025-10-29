@@ -23,6 +23,9 @@
   },
   "homepage": "https://github.com/NicolasGayb/LogistiQ#readme",
   "devDependencies": {
-    "cypress": "^15.5.0"
+    "@cypress/webpack-preprocessor": "^7.0.1",
+    "assert": "^2.1.0",
+    "cypress": "^13.13.0",
+    "util": "^0.12.5"
   }
 }

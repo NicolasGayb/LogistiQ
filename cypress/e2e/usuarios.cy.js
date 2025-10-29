@@ -5,28 +5,98 @@ describe('Gestão de Usuários - LogistiQ', () => {
         cy.visit('/admin/usuarios');
     });
 
-    it('deve exibir a lista de usuários', () => {
+    // Verifica se a página de usuários foi carregada corretamente
+    context('🧾 Estrutura da página', () => {
+    it('deve exibir a tabela e cabeçalhos principais', () => {
         cy.get('table').should('exist');
-        cy.contains('Nome').should('exist');
-        cy.contains('Email').should('exist');
-        cy.contains('Tipo').should('exist');
-        cy.contains('Data Cadastro').should('exist');
-    });
-
-    it('deve filtrar usuários inativos', () => {
-        cy.get('select[name="filtro_status"]').select('Inativos');
-        cy.get('button[type="submit"]').click();
-        cy.contains('Inativo').should('exist');
-    });
-
-    it('deve editar um usuário', () => {
-        cy.contains('teste_usuario').parent('tr').within(() => {
-            cy.get('a.edit-usuario').click();
-        });
-        cy.get('input[name="nome"]').clear().type('Usuário Editado');
-        cy.get('button[type="submit"]').click();
-        cy.contains('Usuário editado com sucesso').should('exist');
+        cy.get('th').contains('Nome');
+        cy.get('th').contains('Email');
+        cy.get('th').contains('Tipo');
+        cy.get('th').contains('Data Cadastro');
     });
 });
+
+    context('🔍 Funcionalidades de filtro', () => {
+    // Filtra usuários por nome e email  
+    it('deve filtrar usuários por nome', () => {
+        cy.filtrarUsuario('Teste Cypress');
+        cy.url().should('include', 'nome=Teste+Cypress');
+        cy.get('tbody tr').should('contain', 'Teste Cypress');
+    });
+    it('deve filtrar usuários por email', () => {
+        cy.filtrarUsuario('teste@example.com');
+        cy.url().should('include', 'nome=teste%40example.com');
+        cy.get('tbody tr').should('contain', 'teste@example.com');
+    });
     
-        
+    // Filtra usuários por tipo 
+    it('deve filtrar usuários do tipo Administrador', () => {
+        cy.filtrarUsuarioTipo('Administrador');
+        cy.url().should('include', 'role=administrador');
+        cy.get('tbody tr').should('contain', 'Administrador');
+    });
+    it('deve filtrar usuários do tipo Supervisor', () => {
+        cy.filtrarUsuarioTipo('Supervisor');
+        cy.url().should('include', 'role=supervisor');
+        cy.get('tbody tr').should('contain', 'Supervisor');
+    });
+    it('deve filtrar usuários do tipo Usuário', () => {
+        cy.filtrarUsuarioTipo('Usuário');
+        cy.url().should('include', 'role=usuario');
+        cy.get('tbody tr').should('contain', 'Usuario');
+    });
+    it('deve filtrar usuários do tipo Convidado', () => {
+        cy.filtrarUsuarioTipo('Convidado');
+        cy.url().should('include', 'role=convidado');
+        cy.get('tbody tr').should('contain', 'Convidado');
+    });
+
+    // Filtra usuários por status
+    it('deve filtrar usuários ativos', () => {
+        cy.get('select[name="ativo"]').select('Ativo');
+        cy.submit()
+        cy.url().should('include', 'ativo=ativo');
+        cy.get('tbody tr').should('contain', 'Ativo');
+    });
+    it('deve filtrar usuários inativos', () => {
+        cy.get('select[name="ativo"]').select('Inativo');
+        cy.submit()
+        cy.url().should('include', 'ativo=inativo');
+        cy.get('tbody tr').should('contain', 'Inativo');
+    });
+});
+
+    context('✏️ Funcionalidade de edição', () => {
+    // Edição de um usuário existente
+    it('deve editar o nome de um usuário', () => {
+        cy.editarUsuario();
+        cy.get('input[name="nome"]').clear().type('Teste Cypress');
+        cy.submit()
+        cy.contains('Usuário atualizado com sucesso').should('be.visible');
+    });
+    it('deve editar o email de um usuário', () => {
+        cy.editarUsuario();
+        cy.get('input[name="email"]').clear().type('teste@example.com');
+        cy.submit()
+        cy.contains('Usuário atualizado com sucesso').should('be.visible');
+    });
+    it('deve editar o tipo de um usuário', () => {
+        cy.editarUsuario();
+        cy.get('select[name="role"]').select('Administrador');
+        cy.submit()
+        cy.contains('Usuário atualizado com sucesso').should('be.visible');
+    });
+    it('deve editar o status de um usuário', () => {
+        cy.editarUsuario();
+        cy.get('input[name="ativo"]').click();
+        cy.submit()
+        cy.contains('Usuário atualizado com sucesso').should('be.visible');
+    });
+    it('deve editar a senha de um usuário', () => {
+        cy.editarUsuario();
+        cy.get('input[name="senha"]').type('senha_teste');
+        cy.submit()
+        cy.contains('Usuário atualizado com sucesso').should('be.visible');
+    });
+});
+});
