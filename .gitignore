@@ -1,16 +1,104 @@
+# ============================================
+# 🐍 PYTHON / FLASK
+# ============================================
+
+# Virtual environments
 venv/
+.env/
+.env.bak/
+*.pyc
 __pycache__/
-estoque.db
-.env
-.cache
-.DS_Store
-.vscode/
-.mypy_cache/
-.pytest_cache/
-.idea/
-logs/
+*.pyo
+*.pyd
+
+# Build e distribuições
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Logs e arquivos temporários
 *.log
 *.sqlite3
+*.db
+instance/
+logs/
+migrations/versions/__pycache__/
+migrations/versions/*.pyc
+
+# Coverage / testes Python
+.coverage
+htmlcov/
+pytest_cache/
+.cache/
+coverage.xml
+test-results.xml
+
+# ============================================
+# ⚙️ FLASK / DEPLOY
+# ============================================
+
+# Arquivos gerados em produção
+*.pid
+*.sock
+*.tar
+*.bak
+*.swp
+
+# Configurações e chaves
+config.json
+secrets.json
+
+# ============================================
+# 🌐 NODE / CYPRESS
+# ============================================
+
+# Node modules
 node_modules/
-/cypress/videos
-/cypress/screenshots
+npm-debug.log*
+package-lock.json
+
+# Cypress cache e output
+cypress/videos/
+cypress/screenshots/
+cypress/downloads/
+cypress/reports/.jsons/
+cypress/.cache/
+cypress/results/
+
+# Mochawesome merged reports
+!cypress/reports/.gitkeep  # mantém a pasta vazia no Git
+
+# ============================================
+# 🧰 SYSTEM / IDEs
+# ============================================
+
+# VSCode
+.vscode/
+.idea/
+
+# macOS / Windows
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ============================================
+# 🧪 CI/CD
+# ============================================
+
+# GitHub Actions artefatos locais
+*.zip
+*.tar.gz
+
+# ============================================
+# 🔒 ENV VARS / SEGREDOS
+# ============================================
+
+# Arquivos sensíveis
+*.pem
+*.key
+*.crt
+*.cer
+*.pfx
+*.pub
+*.env

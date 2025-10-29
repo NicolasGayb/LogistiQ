@@ -1,0 +1,90 @@
+name: 🚀 Deploy Produção (Servidor LogistiQ)
+
+on:
+  push:
+    branches: [ main ]      # 🔹 Roda automaticamente ao fazer merge/push na main
+  workflow_dispatch:         # 🔹 Permite executar manualmente no GitHub
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  # ==============================
+  # 🔎 Aguarda CI/CD anterior
+  # ==============================
+  wait-for-tests:
+    name: ✅ Verificar se o CI passou
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⏳ Aguardando conclusão do CI/CD
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.ref }}
+          check-name: 'CI/CD LogistiQ'   # 🔹 Nome do workflow de testes (ajuste se o teu for diferente)
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 15              # Checa a cada 15 segundos
+
+  # ==============================
+  # 🚀 Deploy no Servidor LogistiQ
+  # ==============================
+  deploy:
+    name: 🚀 Deploy Produção (Servidor LogistiQ)
+    runs-on: ubuntu-latest
+    needs: wait-for-tests
+    if: >
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'pull_request' && github.base_ref == 'main' && github.event.pull_request.merged == true)
+
+    steps:
+      - name: 📥 Checkout do código
+        uses: actions/checkout@v4
+
+      - name: 🐍 Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: ⚙️ Instalar dependências
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 📡 Deploy via SSH
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: 22
+          debug: true
+          script_stop: true
+          script: |
+            PROJECT_DIR="/home/logistiq/LogistiQ"
+            VENV_DIR="$PROJECT_DIR/venv"
+
+            echo "🔹 Ajustando permissões..."
+            sudo chown -R $USER:$USER $PROJECT_DIR || true
+
+            echo "🔹 Atualizando repositório..."
+            cd $PROJECT_DIR
+            git config --global --add safe.directory $PROJECT_DIR
+            git fetch --all
+            git reset --hard origin/main
+
+            echo "🔹 Recriando ambiente virtual..."
+            if [ ! -d "$VENV_DIR" ]; then
+              python3 -m venv $VENV_DIR
+            fi
+            source $VENV_DIR/bin/activate
+            pip install --upgrade pip
+            pip install -r requirements.txt
+
+            echo "🔹 Reiniciando serviços..."
+            sudo systemctl reload logistiq || sudo systemctl restart logistiq
+            sudo systemctl restart nginx
+
+            echo "✅ Deploy concluído com sucesso!"
+            echo "🔗 Acesse: https://logistiq.studio"

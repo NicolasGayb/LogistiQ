@@ -25,15 +25,15 @@
 <!-- ===================== Filtros ===================== -->
 <form method="get" class="row g-3 mb-4">
     <div class="col-md-4">
-        <input type="text" name="nome_email" value="{{ request.args.get('nome_email','') }}" class="form-control" placeholder="Pesquisar por nome ou email">
+        <input type="text" name="nome" value="{{ request.args.get('nome','') }}" class="form-control" placeholder="Pesquisar por nome ou email">
     </div>
     <div class="col-md-3">
-        <select name="tipo" class="form-select">
+        <select name="role" class="form-select">
             <option value="">Todos os tipos</option>
-            <option value="administrador" {% if request.args.get('tipo') == 'administrador' %}selected{% endif %}>Administrador</option>
-            <option value="supervisor" {% if request.args.get('tipo') == 'supervisor' %}selected{% endif %}>Supervisor</option>
-            <option value="usuario" {% if request.args.get('tipo') == 'usuario' %}selected{% endif %}>Usuário</option>
-            <option value="convidado" {% if request.args.get('tipo') == 'convidado' %}selected{% endif %}>Convidado</option>
+            <option value="administrador" {% if request.args.get('role') == 'administrador' %}selected{% endif %}>Administrador</option>
+            <option value="supervisor" {% if request.args.get('role') == 'supervisor' %}selected{% endif %}>Supervisor</option>
+            <option value="usuario" {% if request.args.get('role') == 'usuario' %}selected{% endif %}>Usuário</option>
+            <option value="convidado" {% if request.args.get('role') == 'convidado' %}selected{% endif %}>Convidado</option>
         </select>
     </div>
     <div class="col-md-3">
@@ -86,7 +86,14 @@
     {% for p in usuarios.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
       {% if p %}
         <li class="page-item {% if usuarios.page == p %}active{% endif %}">
-          <a class="page-link" href="{{ url_for('admin.usuarios', page=p, nome_email=request.args.get('nome_email'), tipo=request.args.get('tipo'), ativo=request.args.get('ativo')) }}">{{ p }}</a>
+          <a class="page-link"
+             href="{{ url_for('admin.usuarios',
+                              page=p,
+                              nome=request.args.get('nome'),
+                              role=request.args.get('role'),
+                              ativo=request.args.get('ativo')) }}">
+             {{ p }}
+          </a>
         </li>
       {% else %}
         <li class="page-item disabled"><span class="page-link">…</span></li>

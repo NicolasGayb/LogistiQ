@@ -18,27 +18,32 @@ admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 def usuarios():
     page = request.args.get("page", 1, type=int)
     filtro_nome = request.args.get("nome", "", type=str)
-    filtro_email = request.args.get("email", "", type=str)
     filtro_ativo = request.args.get("ativo", "", type=str)
     filtro_role = request.args.get("role", "todos", type=str)
 
     query = Usuario.query
 
+    # Filtra por nome OU email
     if filtro_nome:
-        query = query.filter(Usuario.nome.ilike(f"%{filtro_nome}%"))
-    if filtro_email:
-        query = query.filter(Usuario.email.ilike(f"%{filtro_email}%"))
-    if filtro_ativo == "sim":
+        query = query.filter(
+            or_(Usuario.nome.ilike(f"%{filtro_nome}%"), 
+                Usuario.email.ilike(f"%{filtro_nome}%")
+            )
+        )
+    # Filtra por ativo/inativo
+    if filtro_ativo == "ativo":
         query = query.filter(Usuario.ativo.is_(True))
-    elif filtro_ativo == "nao":
+    elif filtro_ativo == "inativo":
         query = query.filter(Usuario.ativo.is_(False))
-    if filtro_role != "todos":
+
+    # Filtra por tipo de usuário    
+    if filtro_role != "todos" and filtro_role != "":
         query = query.filter(Usuario.role == filtro_role)
 
     # Usando paginate do SQLAlchemy para criar objeto Pagination
     usuarios_pag = query.order_by(Usuario.id).paginate(page=page, per_page=25, error_out=False)
 
-    # Ajustar horário apenas na lista de itens da página
+    # Ajuste de fuso horário
     for u in usuarios_pag.items:
         if u.data_cadastro:
             u.data_cadastro_ajustada = u.data_cadastro - timedelta(hours=3)
@@ -49,7 +54,6 @@ def usuarios():
         "admin/usuarios.html",
         usuarios=usuarios_pag,
         filtro_nome=filtro_nome,
-        filtro_email=filtro_email,
         filtro_ativo=filtro_ativo,
         filtro_role=filtro_role
     )

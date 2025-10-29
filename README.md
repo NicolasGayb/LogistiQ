@@ -3,6 +3,7 @@
 Sistema web simples para **gestão e controle de processos**, desenvolvido com Python e Flask. Ideal para aprendizado e projetos de portfólio.
 Agora com suporte a **PostgreSQL** para produção, hospedagem própria no **DigitalOcean** e domínio oficial: [logistiq.studio](https://logistiq.studio).
 
+[![Cypress E2E](https://github.com/NicolasGayb/LogistiQ/actions/workflows/ci.yml/badge.svg)](https://nicolasgayb.github.io/LogistiQ/)
 ---
 
 ## 📑 Tabela de Conteúdo
@@ -14,6 +15,7 @@ Agora com suporte a **PostgreSQL** para produção, hospedagem própria no **Dig
 * [Aba de Usuários](#aba-de-usuarios)
 * [Instalação](#instalação)
 * [Uso](#uso)
+* [Testes Automatizados](#-testes-automatizados)
 * [Banco de Dados](#banco-de-dados)
 * [Contributing](#contributing)
 * [Code of Conduct](#code-of-conduct)
@@ -133,6 +135,33 @@ python run.py
 
 2. Acesse no navegador: `http://localhost:5000`
 3. Em produção, acesse: [logistiq.studio](https://logistiq.studio)
+
+---
+
+## 🧪 Testes Automatizados
+
+O LogistiQ conta com uma estrutura completa de **testes automatizados**, garantindo qualidade e estabilidade contínua em cada atualização do sistema.
+
+| Tipo de Teste | Framework | Objetivo |
+|---------------|------------|-----------|
+| **Unitários (Backend)** | `pytest` | Validar regras de negócio, rotas Flask e interações com o banco de dados |
+| **End-to-End (Frontend)** | `Cypress` | Simular a experiência do usuário final testando fluxos completos na interface web |
+
+🧠 **Testes Unitários (Pytest)**  
+Os testes unitários validam o comportamento interno do backend Flask, como criação de usuários, autenticação e integridade do banco de dados.  
+Eles garantem que cada módulo funcione de forma isolada e previsível.
+
+🌐 **Testes E2E (Cypress)**  
+Os testes de ponta a ponta simulam a navegação real no sistema, cobrindo ações como login, CRUD de usuários e alternância de temas.  
+Esses testes utilizam o framework **Cypress** e geram relatórios HTML automáticos via **Mochawesome**.
+
+⚙️ **Integração com CI/CD**  
+Todos os testes são executados automaticamente através do **GitHub Actions**, antes do deploy de produção.  
+O pipeline executa `pytest`, depois `cypress run`, e publica relatórios interativos no **GitHub Pages**.
+
+📄 **Documentação Completa**  
+Para detalhes técnicos sobre como escrever, executar e visualizar testes, consulte o guia:  
+👉 [`documentation/TestesAutomatizados.md`](documentation/TestesAutomatizados.md)
 
 ---
 
