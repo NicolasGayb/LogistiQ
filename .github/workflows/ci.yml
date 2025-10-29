@@ -95,21 +95,29 @@ jobs:
           app = create_app()
           with app.app_context():
               db.create_all()
-              user = Usuario.query.filter_by(email="teste@example.com").first()
-              if not user:
-                  admin = Usuario(
-                      nome="Teste Cypress",
-                      username="TesteCypress",
-                      email="teste@example.com",
-                      senha=generate_password_hash("senha_teste"),
-                      role="administrador",
-                      ativo=True
+
+              def criar_usuario(nome, username, email, senha, role, ativo=True):
+                from app.models import Usuario
+                if not Usuario.query.filter_by(email=email).first():
+                  user = Usuario(
+                      nome=nome,
+                      username=username,
+                      email=email,
+                      senha_hash=generate_password_hash("senha_teste"),
+                      role=role,
+                      ativo=ativo
                   )
-                  db.session.add(admin)
+                  db.session.add(user)
                   db.session.commit()
-                  print("✅ Usuário administrador criado: teste@example.com / senha_teste")
+                  print(f"✅ Usuário '{nome}' ({role}) criado com sucesso.")
               else:
-                  print("ℹ️ Usuário de teste já existe.")
+                  print(f"ℹ️ Usuário com email '{email}' já existe. Pulando criação.")
+
+              criar_usuario("Teste Cypress", "TesteCypress", "teste@example.com", "senha_teste", "administrador")
+              criar_usuario("Teste Supervisor", "TesteSupervisor", "teste_supervisor@example.com", "senha_teste", "supervisor")
+              criar_usuario("Teste Usuario", "TesteUsuario", "teste_usuario@example.com", "senha_teste", "usuario")
+              criar_usuario("Teste Convidado", "TesteConvidado", "teste_convidado@example.com", "senha_teste", "convidado")
+              criar_usuario("Teste Inativo", "TesteInativo", "teste_inativo@example.com", "senha_teste", "usuario", ativo=False)
           PYCODE
 
       - name: 🧪 Executar testes Cypress
