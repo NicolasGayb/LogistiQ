@@ -7,7 +7,9 @@ from dotenv import load_dotenv
 import os
 import secrets
 
-# Instância das extensões
+# ======================================================
+# 🔹 Instância das extensões globais
+# ======================================================
 db = SQLAlchemy()
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
@@ -15,14 +17,27 @@ migrate = Migrate()
 mail = Mail()
 load_dotenv()
 
-# Função de fábrica da aplicação
-def create_app(test_config=None):
-    app = Flask(__name__,
-                static_folder='static',
-                template_folder='templates'
-                )
 
-    # Config padrão
+# ======================================================
+# 🔹 Função de fábrica da aplicação Flask
+# ======================================================
+def create_app(test_config=None, instance_path=None):
+    base_dir = os.path.abspath(os.path.dirname(__file__))
+    default_instance = os.path.join(base_dir, '..', 'instance')
+
+    os.makedirs(instance_path or default_instance, exist_ok=True)
+    
+    app = Flask(
+        __name__,
+        static_folder='static',
+        template_folder='templates',
+        instance_path=instance_path or default_instance,
+        instance_relative_config=True
+    )
+
+    # --------------------------------------------------
+    # 🔧 Configuração padrão do app
+    # --------------------------------------------------
     secret_key = os.environ.get("SECRET_KEY") or secrets.token_hex(32)
     app.config.from_mapping(
         SECRET_KEY=secret_key,
@@ -41,20 +56,30 @@ def create_app(test_config=None):
     if test_config:
         app.config.update(test_config)
 
-    # Inicializa extensões após config final
-    db.init_app(app)
-    login_manager.init_app(app)
-    migrate.init_app(app, db)
-    mail.init_app(app)
+    # --------------------------------------------------
+    # 🔧 Função para inicializar extensões (chamada no run.py)
+    # --------------------------------------------------
+    def init_extensions(app):
+        db.init_app(app)
+        login_manager.init_app(app)
+        migrate.init_app(app, db)
+        mail.init_app(app)
 
-    # Modelo de usuário
+    # 🔹 Anexa o método ao app
+    app.init_extensions = init_extensions
+
+    # --------------------------------------------------
+    # 🔹 Modelo de usuário e user loader
+    # --------------------------------------------------
     from app.models import Usuario
 
     @login_manager.user_loader
     def load_user(user_id):
         return db.session.get(Usuario, int(user_id))
 
-    # Registra blueprints
+    # --------------------------------------------------
+    # 🔹 Registra blueprints
+    # --------------------------------------------------
     from app.routes.web_routes import routes as routes_blueprint
     from app.routes.auth_routes import auth as auth_blueprint
     from app.routes.api_routes import api as api_blueprint
