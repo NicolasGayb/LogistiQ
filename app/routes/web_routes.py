@@ -95,7 +95,7 @@ def atualizar_produto(id):
     registrar_atividade(current_user, f"Atualizou o produto '{produto.nome}'")
 
     flash(f'Produto "{produto.nome}" atualizado com sucesso!', 'success')
-    return redirect(url_for('routes.index'))
+    return redirect(url_for('routes.produtos'))
 
 # ------------------------
 # REMOVER PRODUTO
