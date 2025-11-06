@@ -16,3 +16,10 @@
 // Import commands.js using ES2015 syntax:
 import './commands'
 import './setup'
+
+before(() => {
+  cy.request('POST', '/api/test/reset_db').then((response) => {
+    expect(response.status).to.eq(200);
+    cy.log(response.body.message);
+  });
+});

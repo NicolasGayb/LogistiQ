@@ -76,6 +76,51 @@ if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
 def forbidden(e):
     return render_template('acesso_negado.html'), 403
 
+# ============================================================
+# 🔹 ROTA PARA RESETAR O BANCO DE TESTES (usada pelo Cypress)
+# ============================================================
+from flask import jsonify
+
+@app.route("/api/test/reset_db", methods=["POST"])
+def reset_db():
+    """Apaga e recria todas as tabelas (modo de teste)."""
+    try:
+        from app import db
+        from app.models import Usuario  # garante importação dos modelos
+        db.drop_all()
+        db.create_all()
+        return jsonify({"message": "Banco de testes recriado com sucesso."}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+# ============================================================
+# 🔹 ROTA PARA PROMOVER UM USUÁRIO A ADMIN (usada pelo Cypress)
+# ============================================================
+from flask import request, jsonify
+from app.models import Usuario
+from app import db
+
+@app.route("/api/test/promote_admin", methods=["POST"])
+def promote_admin():
+    """Define o usuário informado como administrador."""
+    data = request.get_json()
+    email = data.get("email")
+
+    if not email:
+        return jsonify({"error": "E-mail é obrigatório"}), 400
+
+    try:
+        user = Usuario.query.filter_by(email=email).first()
+        if not user:
+            return jsonify({"error": "Usuário não encontrado"}), 404
+
+        user.role = "administrador"
+        db.session.commit()
+        return jsonify({"message": f"Usuário {email} promovido a administrador."}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
 # ======================================================
 # 🔹 Executa servidor Flask
 # ======================================================

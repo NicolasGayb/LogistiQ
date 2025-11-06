@@ -47,3 +47,32 @@ Cypress.Commands.add('editarUsuario', () => {
 Cypress.Commands.add('submitForm', () => {
     cy.get('button[type="submit"]').click();
 });
+
+// Configuração do ambiente para testes com Admin
+Cypress.Commands.add('setupAmbienteAdmin', () => {
+  // 1. Resetar o banco de dados de testes
+  cy.request('POST', '/api/test/reset_db').then((response) => {
+    expect(response.status).to.eq(200);
+    cy.log('🧹 Banco de testes resetado');
+  });
+
+  // 2. Cadastrar o admin
+  cy.cadastroUsuario(
+    'Admin Cypress',
+    'admin@teste.com',
+    'adminCypress',
+    'Senha123!',
+    'Senha123!'
+  );
+
+  // 3. Promover o usuário a admin via API
+  cy.request('POST', '/api/test/promote_admin', {
+    email: 'admin@teste.com'}).then((response) => {
+        expect(response.status).to.eq(200);
+        cy.log('🛡️ Usuário promovido a Admin');
+
+  // 4. Fazer login com esse admin
+  cy.login('admin@teste.com', 'Senha123!');
+  cy.log('✅ Ambiente pronto com Admin logado');
+});
+});
