@@ -76,3 +76,12 @@ Cypress.Commands.add('setupAmbienteAdmin', () => {
   cy.log('✅ Ambiente pronto com Admin logado');
 });
 });
+// Comando para criar um produto
+Cypress.Commands.add('criarProduto', (nome, quantidade, preco) => {
+    cy.setupAmbienteAdmin();
+            cy.visit('/produtos');
+            cy.get('input[name="nome"]').type(nome);
+            cy.get('input[name="quantidade"]').type(quantidade);
+            cy.get('input[name="preco"]').type(preco);
+            cy.get('button[type="submit"]').click();
+    });

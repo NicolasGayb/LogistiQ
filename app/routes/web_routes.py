@@ -126,7 +126,7 @@ def remover_produto(id):
     registrar_atividade(current_user, f"Removeu o produto '{produto.nome}' do estoque")
 
     flash(f'Produto "{produto.nome}" removido com sucesso!', 'success')
-    return redirect(url_for('routes.index'))
+    return redirect(url_for('routes.produtos'))
 
 # ------------------------
 # HISTÓRICO DE MOVIMENTAÇÕES
