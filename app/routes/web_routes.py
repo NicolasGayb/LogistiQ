@@ -128,9 +128,9 @@ def remover_produto(id):
     flash(f'Produto "{produto.nome}" removido com sucesso!', 'success')
     return redirect(url_for('routes.produtos'))
 
-# ------------------------
+# -------------------------
 # HISTÓRICO DE MOVIMENTAÇÕES
-# ------------------------
+# -------------------------
 @routes.route('/historico')
 @login_required
 @role_required('administrador', 'supervisor')
