@@ -40,9 +40,6 @@ app.config.update(
     SQLALCHEMY_TRACK_MODIFICATIONS=False
 )
 
-# 🔧 Inicializa extensões após configurar URI
-app.init_extensions(app)
-
 print(f"\n🔧 Ambiente: {FLASK_ENV}")
 print(f"📦 Banco selecionado: {DB_NAME}")
 
