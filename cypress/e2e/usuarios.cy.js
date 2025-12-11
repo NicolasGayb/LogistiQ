@@ -1,7 +1,7 @@
 describe('Gestão de Usuários - LogistiQ', () => {
     beforeEach(() => {
         // Realiza login antes de cada teste
-        cy.login('teste@example.com', 'Senha123!');
+        cy.login('teste@example.com', 'senha_teste');
         cy.visit('/admin/usuarios');
     });
 

@@ -2,9 +2,11 @@ import os
 import sqlite3
 from dotenv import load_dotenv
 from app import create_app, db
-from flask import render_template
+from flask import render_template, jsonify, request
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
+from app.models import Usuario
+from werkzeug.security import generate_password_hash
 
 # ======================================================
 # 🔹 Configura ambiente e Sentry
@@ -37,17 +39,15 @@ DB_URI = f"sqlite:///{DB_PATH}"  # caminho absoluto no formato correto
 app = create_app(instance_path=INSTANCE_PATH)
 app.config.update(
     SQLALCHEMY_DATABASE_URI=DB_URI,
-    SQLALCHEMY_TRACK_MODIFICATIONS=False
+    SQLALCHEMY_TRACK_MODIFICATIONS=False,
+    TESTING=IS_TESTING
 )
-
-# 🔧 Inicializa extensões após configurar URI
-app.init_extensions(app)
 
 print(f"\n🔧 Ambiente: {FLASK_ENV}")
 print(f"📦 Banco selecionado: {DB_NAME}")
 
 # ======================================================
-# 🔹 Testa acesso direto ao SQLite (nível SO)
+# 🔹 (Opcional) Testa acesso direto ao SQLite
 # ======================================================
 try:
     conn = sqlite3.connect(DB_PATH)
@@ -58,16 +58,19 @@ except Exception as e:
     print(f"❌ Falha ao abrir o banco diretamente: {e}")
 
 # ======================================================
-# 🔹 Criação das tabelas (sem interferência do auto-reload)
+# 🔹 Criação das tabelas
+#    - Em teste: garante drop_all + create_all na subida
+#    - Fora de teste: apenas create_all (ou usa migrações)
 # ======================================================
-if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-    with app.app_context():
-        try:
-            db.engine.dispose()
-            db.create_all()
-            print(f"✅ Banco inicializado: {app.config['SQLALCHEMY_DATABASE_URI']}")
-        except Exception as e:
-            print(f"❌ Erro ao criar tabelas: {e}")
+with app.app_context():
+    try:
+        if IS_TESTING:
+            db.session.remove()
+            db.drop_all()
+        db.create_all()
+        print(f"✅ Banco inicializado: {app.config['SQLALCHEMY_DATABASE_URI']}")
+    except Exception as e:
+        print(f"❌ Erro ao criar tabelas: {e}")
 
 # ======================================================
 # 🔹 Handler para erro 403
@@ -79,27 +82,80 @@ def forbidden(e):
 # ============================================================
 # 🔹 ROTA PARA RESETAR O BANCO DE TESTES (usada pelo Cypress)
 # ============================================================
-from flask import jsonify
-
 @app.route("/api/test/reset_db", methods=["POST"])
 def reset_db():
     """Apaga e recria todas as tabelas (modo de teste)."""
+    if not app.config.get("TESTING", False):
+        return jsonify({"error": "Operação permitida apenas em ambiente de teste."}), 403
+
     try:
-        from app import db
-        from app.models import Usuario  # garante importação dos modelos
+        print("🧩 Resetando banco de teste via drop_all/create_all...")
+        db.session.remove()
         db.drop_all()
         db.create_all()
+
+        # 🔹 cria o admin usado no Cypress
+        admin = Usuario(
+            nome="Teste Cypress",
+            username="TesteCypress",
+            email="teste@example.com",
+            senha=generate_password_hash("senha_teste"),
+            role="administrador",
+            ativo=True,
+        )
+        # 🔹 cria o supervisor usado no Cypress
+        supervisor = Usuario(
+            nome="Supervisor Cypress",
+            username="SupervisorCypress",
+            email="supervisor@example.com",
+            senha=generate_password_hash("senha_teste"),
+            role="supervisor",
+            ativo=True,
+        )
+        # cria o usuário comum usado no Cypress
+        usuario = Usuario(
+            nome="Usuário Cypress",
+            username="UsuarioCypress",
+            email="usuario@example.com",
+            senha=generate_password_hash("senha_teste"),
+            role="usuario",
+            ativo=True,
+        )
+        # cria o usuário convidado usado no Cypress
+        usuario_convidado = Usuario(
+            nome="Usuário Convidado Cypress",
+            username="UsuarioConvidadoCypress",
+            email="convidado@example.com",
+            senha=generate_password_hash("senha_teste"),
+            role="convidado",
+            ativo=True,
+        )
+
+        # cria o usuário inativo usado no Cypress
+        usuario_inativo = Usuario(
+            nome="Usuário Inativo Cypress",
+            username="UsuarioInativoCypress",
+            email="inativo@example.com",
+            senha=generate_password_hash("senha_teste"),
+            role="usuario",
+            ativo=False,
+        )
+
+        db.session.add(usuario_inativo)
+        db.session.add(usuario_convidado)
+        db.session.add(usuario)
+        db.session.add(supervisor)
+        db.session.add(admin)
+        db.session.commit()
         return jsonify({"message": "Banco de testes recriado com sucesso."}), 200
+
     except Exception as e:
+        print(f"❌ Erro ao resetar banco de teste: {e}")
         return jsonify({"error": str(e)}), 500
-    
+
 # ============================================================
 # 🔹 ROTA PARA PROMOVER UM USUÁRIO A ADMIN (usada pelo Cypress)
 # ============================================================
-from flask import request, jsonify
-from app.models import Usuario
-from app import db
-
 @app.route("/api/test/promote_admin", methods=["POST"])
 def promote_admin():
     """Define o usuário informado como administrador."""
@@ -126,7 +182,12 @@ def promote_admin():
 # ======================================================
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    debug_mode = FLASK_ENV != "production"
+
+    # Em CI/teste não queremos debug nem reloader
+    if IS_TESTING:
+        debug_mode = False
+    else:
+        debug_mode = FLASK_ENV != "production"
 
     print(f"\n🚀 Servidor rodando em http://localhost:{port}/")
     print(f"🧩 Banco em uso: {DB_URI}\n")

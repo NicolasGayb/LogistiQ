@@ -57,16 +57,12 @@ def create_app(test_config=None, instance_path=None):
         app.config.update(test_config)
 
     # --------------------------------------------------
-    # 🔧 Função para inicializar extensões (chamada no run.py)
+    # 🔧 Inicializar extensõe
     # --------------------------------------------------
-    def init_extensions(app):
-        db.init_app(app)
-        login_manager.init_app(app)
-        migrate.init_app(app, db)
-        mail.init_app(app)
-
-    # 🔹 Anexa o método ao app
-    app.init_extensions = init_extensions
+    db.init_app(app)
+    login_manager.init_app(app)
+    migrate.init_app(app, db)
+    mail.init_app(app)
 
     # --------------------------------------------------
     # 🔹 Modelo de usuário e user loader

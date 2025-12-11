@@ -15,7 +15,6 @@
 
 // Import commands.js using ES2015 syntax:
 import './commands'
-import './setup'
 
 before(() => {
   cy.request('POST', '/api/test/reset_db').then((response) => {
