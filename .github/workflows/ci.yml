@@ -82,42 +82,6 @@ jobs:
           sleep 10
           curl -I http://127.0.0.1:5000 || echo "⚠️ Servidor não respondeu"
 
-      - name: 🧩 Criar usuários de teste
-        run: |
-          source venv/bin/activate
-          python - <<'PYCODE'
-          from app import create_app, db
-          from app.models import Usuario
-          from werkzeug.security import generate_password_hash
-
-          app = create_app()
-          with app.app_context():
-              db.create_all()
-
-              def criar_usuario(nome, username, email, senha, role, ativo=True):
-                from app.models import Usuario
-                if not Usuario.query.filter_by(email=email).first():
-                  user = Usuario(
-                      nome=nome,
-                      username=username,
-                      email=email,
-                      senha=generate_password_hash("senha_teste"),
-                      role=role,
-                      ativo=ativo
-                  )
-                  db.session.add(user)
-                  db.session.commit()
-                  print(f"✅ Usuário '{nome}' ({role}) criado com sucesso.")
-                else:
-                  print(f"ℹ️ Usuário com email '{email}' já existe. Pulando criação.")
-
-              criar_usuario("Teste Cypress", "TesteCypress", "teste@example.com", "senha_teste", "administrador")
-              criar_usuario("Teste Supervisor", "TesteSupervisor", "teste_supervisor@example.com", "senha_teste", "supervisor")
-              criar_usuario("Teste Usuario", "TesteUsuario", "teste_usuario@example.com", "senha_teste", "usuario")
-              criar_usuario("Teste Convidado", "TesteConvidado", "teste_convidado@example.com", "senha_teste", "convidado")
-              criar_usuario("Teste Inativo", "TesteInativo", "teste_inativo@example.com", "senha_teste", "usuario", ativo=False)
-          PYCODE
-
       - name: 🧪 Executar testes Cypress
         env:
           CYPRESS_BASE_URL: http://localhost:5000

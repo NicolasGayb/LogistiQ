@@ -6,6 +6,7 @@ from flask import render_template, jsonify, request
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 from app.models import Usuario
+from werkzeug.security import generate_password_hash
 
 # ======================================================
 # 🔹 Configura ambiente e Sentry
@@ -92,7 +93,62 @@ def reset_db():
         db.session.remove()
         db.drop_all()
         db.create_all()
+
+        # 🔹 cria o admin usado no Cypress
+        admin = Usuario(
+            nome="Teste Cypress",
+            username="TesteCypress",
+            email="teste@example.com",
+            senha=generate_password_hash("senha_teste"),
+            role="administrador",
+            ativo=True,
+        )
+        # 🔹 cria o supervisor usado no Cypress
+        supervisor = Usuario(
+            nome="Supervisor Cypress",
+            username="SupervisorCypress",
+            email="supervisor@example.com",
+            senha=generate_password_hash("senha_teste"),
+            role="supervisor",
+            ativo=True,
+        )
+        # cria o usuário comum usado no Cypress
+        usuario = Usuario(
+            nome="Usuário Cypress",
+            username="UsuarioCypress",
+            email="usuario@example.com",
+            senha=generate_password_hash("senha_teste"),
+            role="usuario",
+            ativo=True,
+        )
+        # cria o usuário convidado usado no Cypress
+        usuario_convidado = Usuario(
+            nome="Usuário Convidado Cypress",
+            username="UsuarioConvidadoCypress",
+            email="convidado@example.com",
+            senha=generate_password_hash("senha_teste"),
+            role="convidado",
+            ativo=True,
+        )
+
+        # cria o usuário inativo usado no Cypress
+        usuario_inativo = Usuario(
+            nome="Usuário Inativo Cypress",
+            username="UsuarioInativoCypress",
+            email="inativo@example.com",
+            senha=generate_password_hash("senha_teste"),
+            role="usuario",
+            ativo=False,
+        )
+
+        db.session.add(usuario_inativo)
+        db.session.add(usuario_convidado)
+        db.session.add(usuario)
+        db.session.add(supervisor)
+        db.session.add(admin)
+        db.session.commit()
         return jsonify({"message": "Banco de testes recriado com sucesso."}), 200
+
     except Exception as e:
         print(f"❌ Erro ao resetar banco de teste: {e}")
         return jsonify({"error": str(e)}), 500
